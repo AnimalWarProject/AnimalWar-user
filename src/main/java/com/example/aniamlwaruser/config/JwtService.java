@@ -123,14 +123,6 @@ public class JwtService {
                 .userUUID(user.getUserUUID())
                 .id(user.getId())
                 .nickName(user.getNickName())
-                .food(user.getFood())
-                .iron(user.getIron())
-                .wood(user.getWood())
-                .gold(user.getGold())
-                .attackPower(user.getAttackPower())
-                .defensePower(user.getDefensePower())
-                .battlePoint(user.getBattlePoint())
-                .species(user.getSpecies())
                 .build();
     }
 }
