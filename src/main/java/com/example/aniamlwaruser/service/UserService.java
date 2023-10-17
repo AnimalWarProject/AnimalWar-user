@@ -1,11 +1,7 @@
 package com.example.aniamlwaruser.service;
 
-import com.example.aniamlwaruser.client.api.DrawClient;
-import com.example.aniamlwaruser.client.api.MapClient;
+
 import com.example.aniamlwaruser.config.JwtService;
-import com.example.aniamlwaruser.domain.dto.AnimalDto;
-import com.example.aniamlwaruser.domain.dto.BuildingDto;
-import com.example.aniamlwaruser.domain.dto.LandFormDto;
 import com.example.aniamlwaruser.domain.entity.RefreshToken;
 import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.request.LoginRequest;
@@ -30,8 +26,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
-    private final DrawClient drawClient;
-    private final MapClient mapClient;
+
 
 
     @Transactional
@@ -114,55 +109,6 @@ public class UserService {
     }
 
 
-    public int getTotalAttackPower(User user) {
-        int totalAttack = user.getAttackPower();
-
-        for (Long animalId : user.getOwnedAnimalIds()) {
-            AnimalDto animal = drawClient.getAnimalById(animalId);
-            totalAttack += animal.getAttackPower();
-        }
-
-        for (Long buildingId : user.getOwnedBuildingIds()) {
-            BuildingDto building = drawClient.getBuildingById(buildingId);
-            totalAttack += building.getAttackPower();
-        }
-
-        return totalAttack;
-    }
-
-    public int getTotalDefensePower(User user) {
-        int totalDefense = user.getDefensePower();
-
-        for (Long animalId : user.getOwnedAnimalIds()) {
-            AnimalDto animal = drawClient.getAnimalById(animalId);
-            totalDefense += animal.getDefensePower();
-        }
-
-        for (Long buildingId : user.getOwnedBuildingIds()) {
-            BuildingDto building = drawClient.getBuildingById(buildingId);
-            totalDefense += building.getDefensePower();
-        }
-
-        return totalDefense;
-    }
 
 
-    public User getUserByUserId(String id) {
-        return userRepository.findByid(id)
-                .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND FOR USERID: " + id));
-    }
-
-    public void updatePowerForUser(User user) {
-        int totalAttack = getTotalAttackPower(user);
-        int totalDefense = getTotalDefensePower(user);
-        user.setAttackPower(totalAttack);
-        user.setDefensePower(totalDefense);
-        userRepository.save(user);
-    }
-
-    public void updateLandFormForUser(User user) {
-        LandFormDto landFormDto = mapClient.getLandFormByUserId(user.getId()).getBody();
-        user.setLandForm(landFormDto.getLandForm());
-        userRepository.save(user);
-    }
 }
