@@ -54,17 +54,4 @@ public class UserController {
         return ResponseEntity.ok().body(newAccessToken);
     }
 
-    @PostMapping("/updatePower")
-    public ResponseEntity<?> updatePower(@AuthenticationPrincipal TokenInfo tokenInfo) {
-        User user = userService.getUserByUserId(tokenInfo.getId());
-        userService.updatePowerForUser(user);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/updateLandForm")
-    public ResponseEntity<?> updateLandForm(@AuthenticationPrincipal TokenInfo tokenInfo) {
-        User user = userService.getUserByUserId(tokenInfo.getId());
-        userService.updateLandFormForUser(user);
-        return ResponseEntity.ok().build();
-    }
 }
