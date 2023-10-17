@@ -34,6 +34,7 @@ public class User {
 
     private int attackPower;
     private int defensePower;
+    private int healthPower;
     private int battlePoint;
 
     private String profileImage;
