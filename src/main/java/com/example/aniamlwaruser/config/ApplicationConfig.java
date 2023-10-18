@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
+    private final JwtService jwtService;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -23,6 +24,7 @@ public class ApplicationConfig {
         DaoAuthenticationProvider authenticationProvider =
                 new DaoAuthenticationProvider();
         authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setUserDetailsService(jwtService::parseAccessToken);
         return authenticationProvider;
     }
     @Bean
