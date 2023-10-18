@@ -16,6 +16,6 @@ public class UserConsumer {
     @KafkaListener(topics = "terrain-response-topic", groupId = "user-info-updater")
     public void updateUserInfo(ConsumerRecord<String, TerrainRequestDto> record) {
         TerrainRequestDto terrainRequestDto = record.value();
-        userService.updateUserTerrain(terr);
+        userService.updateUserTerrain(terrainRequestDto);
     }
 }

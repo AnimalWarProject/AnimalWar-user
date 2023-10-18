@@ -1,6 +1,6 @@
 
 server:
-  port: 0
+  port: 8082
 spring:
   application:
     name: user-service
@@ -10,7 +10,7 @@ spring:
     password: 1q2w3e4r!!
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     show-sql: true
 
   kafka:
@@ -21,7 +21,8 @@ spring:
       group-id: MAP
       auto-offset-reset: earliest
 
-
+#jwt:
+#  secret: "fewbiuebeot5324980hbhgsd0uub9gpkklnqbp4214989oub926t32be0gbdsn"
 
 eureka:
   client:
