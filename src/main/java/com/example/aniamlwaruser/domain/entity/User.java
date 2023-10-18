@@ -1,11 +1,8 @@
 package com.example.aniamlwaruser.domain.entity;
 
 
-import com.example.aniamlwaruser.domain.dto.OwnedAnimal;
-import com.example.aniamlwaruser.domain.dto.OwnedBuilding;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +14,6 @@ import java.util.UUID;
 @Builder
 @Getter
 @Setter
-@Configurable
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,20 +30,23 @@ public class User {
 
     private int attackPower;
     private int defensePower;
-    private int healthPower;
+    private int life;
     private int battlePoint;
 
     private String profileImage;
 
 
     @OneToMany(mappedBy = "user")
-    private List<OwnedAnimal> ownedAnimalList;
+    private List<Animal> ownedAnimalList;
 
     @OneToMany(mappedBy = "user")
-    private List<OwnedBuilding> ownedBuildingList;
+    private List<Building> ownedBuildingList;
 
     @Enumerated(EnumType.STRING)
     private Species species;
 
+    private int sea;
+    private int land;
+    private int mountain;
     private LandForm landForm;
 }
