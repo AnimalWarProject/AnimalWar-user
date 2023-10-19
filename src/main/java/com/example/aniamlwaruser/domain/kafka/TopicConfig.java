@@ -1,4 +1,4 @@
-package com.example.aniamlwaruser.kafka;
+package com.example.aniamlwaruser.domain.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TopicConfig {
 //    public final static String customerTopic = "customer";
-    public final static String userTopic = "user";
+    public final static String matchTopic = "match";
 
 //    @Bean
 //    public NewTopic customerTopic(){
@@ -17,7 +17,7 @@ public class TopicConfig {
     @Bean
     public NewTopic ownerTopic(){
         return TopicBuilder
-                .name(userTopic)
+                .name(matchTopic)
                 .replicas(1)
                 .partitions(1)
                 .build();

@@ -19,12 +19,12 @@ public class UserController {
     private final UserService userService;
     private final UserProducer userProducer;
 
-    @GetMapping("/findUser/{id}")
+    @GetMapping("/findUserId/{id}")
     public UserResponse findByUserId(@PathVariable String id){
         return userService.findUserByUserId(id);
     }
 
-    @GetMapping("/findUser/{userUUID}")
+    @GetMapping("/findUserUUID/{userUUID}")
     public UserResponse findByUserUUID(@PathVariable UUID userUUID){
         return userService.findUserByUserUUId(userUUID);
     }
