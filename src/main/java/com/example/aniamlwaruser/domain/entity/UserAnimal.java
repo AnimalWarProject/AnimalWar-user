@@ -26,6 +26,6 @@ public class UserAnimal {
     private Animal animal;
 
     private int ownedQuantity;
-    private int batchedQuantity;
+    private int placedQuantity;
     private int upgrade;
 }

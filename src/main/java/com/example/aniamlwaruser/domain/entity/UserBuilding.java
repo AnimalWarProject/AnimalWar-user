@@ -27,6 +27,6 @@ public class UserBuilding {
     private Building building;
 
     private int ownedQuantity;
-    private int batchedQuantity;
+    private int placedQuantity;
     private int upgrade;
 }
