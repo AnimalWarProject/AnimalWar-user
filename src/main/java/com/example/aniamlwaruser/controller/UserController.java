@@ -21,12 +21,12 @@ public class UserController {
 
 
 
-    @GetMapping("/findUser/{id}")
+    @GetMapping("/findByID/{id}")
     public UserResponse findByUserId(@PathVariable String id){
         return userService.findUserByUserId(id);
     }
 
-    @GetMapping("/findUser/{userUUID}")
+    @GetMapping("/findByUUID/{userUUID}")
     public UserResponse findByUserUUID(@PathVariable UUID userUUID){
         return userService.findUserByUserUUId(userUUID);
     }
