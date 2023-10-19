@@ -90,7 +90,7 @@ public class JwtService {
     // AccessToken 생성
     public String makeAccessToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("UUID", user.getUserUUID());
+        claims.put("userUUID", user.getUserUUID());
         claims.put("id", user.getId());
         claims.put("nickName", user.getNickName());
 
