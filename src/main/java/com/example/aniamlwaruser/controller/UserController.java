@@ -10,6 +10,7 @@ import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,10 +34,10 @@ public class UserController {
         userService.signUp(signupRequest);
     }
 
-    @GetMapping("/me")
-    public TokenInfo me(@AuthenticationPrincipal TokenInfo tokenInfo){
-        return tokenInfo;
-    }
+//    @GetMapping("/me")
+//    public TokenInfo me(@AuthenticationPrincipal TokenInfo tokenInfo){
+//        return tokenInfo;
+//    }
 
     @GetMapping("/findUser/{id}")
     public UserResponse findByuserId(@PathVariable String id){
