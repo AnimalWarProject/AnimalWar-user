@@ -7,7 +7,7 @@ import com.example.aniamlwaruser.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,18 +21,15 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
+
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+
 
     @Value("${jwt.secret}")
     private String secret;
-
-    @Autowired
-    private UserRepository userRepository;
-
-
-
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
 
     public String generateNewAccessToken(String refreshToken) {
         try {
@@ -106,11 +103,11 @@ public class JwtService {
                 .compact();
     }
 
-    public TokenInfo parseAccessToken(String Accesstoken) {
+    public TokenInfo parseAccessToken(String accesstoken) {
         Claims body = Jwts.parserBuilder()
                 .setSigningKey(secret.getBytes())
                 .build()
-                .parseClaimsJws(Accesstoken)
+                .parseClaimsJws(accesstoken)
                 .getBody();
 
 

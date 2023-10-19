@@ -5,13 +5,21 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:mysql://localhost:3306/AnimalWar?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/User?serverTimezone=Asia/Seoul
     username: root
     password: 1q2w3e4r!!
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     show-sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      group-id: Terrain
+      auto-offset-reset: earliest
 
 
 eureka:
