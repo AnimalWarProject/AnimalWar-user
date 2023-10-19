@@ -103,11 +103,11 @@ public class JwtService {
                 .compact();
     }
 
-    public TokenInfo parseAccessToken(String accesstoken) {
+    public TokenInfo parseAccessToken(String accessToken) {
         Claims body = Jwts.parserBuilder()
                 .setSigningKey(secret.getBytes())
                 .build()
-                .parseClaimsJws(accesstoken)
+                .parseClaimsJws(accessToken)
                 .getBody();
 
 
