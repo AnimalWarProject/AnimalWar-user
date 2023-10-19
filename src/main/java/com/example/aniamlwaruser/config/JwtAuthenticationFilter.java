@@ -30,8 +30,8 @@ public class JwtAuthenticationFilter
             filterChain.doFilter(request, response);
             return;
         }
-        String token = authHeader.replace("Bearer ", "");
-        TokenInfo tokenInfo = jwtService.parseAccessToken(token);
+        String accessToken = authHeader.replace("Bearer ", "");
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken);
         if(tokenInfo != null
                 && !tokenInfo.getId().isEmpty()
                 && SecurityContextHolder.getContext().getAuthentication() == null

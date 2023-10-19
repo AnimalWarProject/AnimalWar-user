@@ -90,6 +90,7 @@ public class JwtService {
     // AccessToken 생성
     public String makeAccessToken(User user) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("UUID", user.getUserUUID());
         claims.put("id", user.getId());
         claims.put("nickName", user.getNickName());
 
@@ -103,11 +104,11 @@ public class JwtService {
                 .compact();
     }
 
-    public TokenInfo parseAccessToken(String accesstoken) {
+    public TokenInfo parseAccessToken(String accessToken) {
         Claims body = Jwts.parserBuilder()
                 .setSigningKey(secret.getBytes())
                 .build()
-                .parseClaimsJws(accesstoken)
+                .parseClaimsJws(accessToken)
                 .getBody();
 
 
