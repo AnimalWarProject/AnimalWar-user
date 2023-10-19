@@ -14,6 +14,7 @@ import com.example.aniamlwaruser.domain.response.LoginResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.exception.InvalidPasswordException;
 import com.example.aniamlwaruser.exception.UserNotFoundException;
+import com.example.aniamlwaruser.kafka.UserProducer;
 import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,11 +28,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final DrawClient drawClient;
     private final MapClient mapClient;
+    private final UserProducer userProducer;
 
 
     @Transactional
@@ -40,10 +42,24 @@ public class UserService {
                 .id(request.getId())
                 .nickName(request.getNickName())
                 .profileImage(request.getProfileImage())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password((request.getPassword()))
                 .species(request.getSpecies())
                 .build();
         userRepository.save(user);
+
+        userProducer.send(UserResponse.builder()
+                .id(user.getId())
+                .nickName(user.getNickName())
+                .food(user.getFood())
+                .iron(user.getIron())
+                .wood(user.getWood())
+                .gold(user.getGold())
+                .attackPower(user.getAttackPower())
+                .defensePower(user.getDefensePower())
+                .battlePoint(user.getBattlePoint())
+                .profileImage(user.getProfileImage())
+                .species(user.getSpecies())
+                .build());
     }
 
 
@@ -53,9 +69,9 @@ public class UserService {
         User user = optionalUser.orElseThrow(
                 () -> new UserNotFoundException("User not found"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidPasswordException("Invalid password");
-        }
+//        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+//            throw new InvalidPasswordException("Invalid password");
+//        }
 
         String accessToken = jwtService.makeAccessToken(user);
         String refreshTokenString = jwtService.makeRefreshToken(user);
