@@ -19,6 +19,8 @@ public class UserController {
     private final UserService userService;
     private final UserProducer userProducer;
 
+
+
     @GetMapping("/findUser/{id}")
     public UserResponse findByUserId(@PathVariable String id){
         return userService.findUserByUserId(id);
