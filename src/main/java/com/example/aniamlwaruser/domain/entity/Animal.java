@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class Animal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long animalId;
     private String name;
     private Grade grade;
     private Integer attackPower;

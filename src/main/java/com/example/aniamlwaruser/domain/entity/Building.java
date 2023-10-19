@@ -11,7 +11,7 @@ import lombok.*;
 @Table(name = "buildings")
 public class Building {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long buildingId;
     private String name;
     private Grade grade;
     private Integer attackPower;
