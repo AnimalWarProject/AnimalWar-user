@@ -37,10 +37,10 @@ public class User {
 
 
     @OneToMany(mappedBy = "user")
-    private List<Animal> ownedAnimalList;
+    private List<UserAnimal> animalInventory;
 
     @OneToMany(mappedBy = "user")
-    private List<Building> ownedBuildingList;
+    private List<UserBuilding> buildingInventory;
 
     @Enumerated(EnumType.STRING)
     private Species species;
