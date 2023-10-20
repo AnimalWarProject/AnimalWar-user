@@ -14,13 +14,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserAnimal {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name ="userUUID")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name ="ainmalId")
     private Animal animal;
 
     private int ownedQuantity;

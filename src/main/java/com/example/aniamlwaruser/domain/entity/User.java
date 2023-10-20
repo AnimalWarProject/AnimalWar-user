@@ -7,6 +7,7 @@ import lombok.*;
 import java.util.List;
 import java.util.UUID;
 
+@Table(name = "users")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
