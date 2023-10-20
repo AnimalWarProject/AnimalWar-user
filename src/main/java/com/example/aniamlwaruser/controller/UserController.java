@@ -1,7 +1,5 @@
 package com.example.aniamlwaruser.controller;
 
-import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
-import com.example.aniamlwaruser.domain.kafka.UserProducer;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +15,6 @@ import java.util.UUID;
 
 public class UserController {
     private final UserService userService;
-    private final UserProducer userProducer;
 
 
 
@@ -32,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping("/requestTerrain")
-    public void requestTerrain(@RequestBody TerrainRequestDto terrainRequestDto) {
-        userProducer.requestTerrain(terrainRequestDto);
+    public void requestTerrain(@RequestBody UUID userUUID) {
+        userService.requestTerrain(userUUID);
     }
 }

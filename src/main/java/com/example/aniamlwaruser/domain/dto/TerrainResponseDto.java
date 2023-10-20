@@ -5,12 +5,8 @@ import lombok.Data;
 
 import java.util.UUID;
 
-
 @Data
-public class TerrainRequestDto {
+public class TerrainResponseDto {
     private UUID userUUID;
-    private int land;
-    private int sea;
-    private int mountain;
     private LandForm landForm;
 }
