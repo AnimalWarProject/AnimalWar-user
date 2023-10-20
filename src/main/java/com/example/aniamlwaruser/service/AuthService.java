@@ -3,9 +3,11 @@ package com.example.aniamlwaruser.service;
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.domain.entity.RefreshToken;
 import com.example.aniamlwaruser.domain.entity.User;
+import com.example.aniamlwaruser.domain.kafka.MatchProducer;
 import com.example.aniamlwaruser.domain.request.LoginRequest;
 import com.example.aniamlwaruser.domain.request.SignupRequest;
 import com.example.aniamlwaruser.domain.response.LoginResponse;
+import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.exception.InvalidPasswordException;
 import com.example.aniamlwaruser.exception.UserNotFoundException;
 import com.example.aniamlwaruser.repository.UserRepository;
@@ -26,6 +28,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final MatchProducer matchProducer;
     @Transactional
     public void signUp(SignupRequest request) {
         User user = User.builder()
@@ -36,6 +39,24 @@ public class AuthService {
                 .species(request.getSpecies())
                 .build();
         userRepository.save(user);
+
+
+        User user1 = userRepository.findByid(user.getId()).get();
+
+        UserResponse build = UserResponse.builder()
+                .id(user.getId())
+                .nickName(user.getNickName())
+                .food(user.getFood())
+                .iron(user.getIron())
+                .wood(user.getWood())
+                .gold(user.getGold())
+                .attackPower(user.getAttackPower())
+                .defensePower(user.getDefensePower())
+                .battlePoint(user.getBattlePoint())
+                .profileImage(user.getProfileImage())
+                .species(user.getSpecies())
+                .build();
+        matchProducer.send(build);
     }
 
 

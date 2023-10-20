@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter @Builder @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +23,6 @@ public class Animal {
     private Integer life;
     private Species species;
 
-    @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name = "userUUID")
-    private User user;
+    @OneToMany(mappedBy = "animal")
+    private List<UserAnimal> userAnimals;
 }
