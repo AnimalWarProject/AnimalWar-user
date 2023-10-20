@@ -45,8 +45,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Species species;
 
-    private int sea;
-    private int land;
-    private int mountain;
+    private int FreeTerrainNum;
+
     private LandForm landForm;
 }
