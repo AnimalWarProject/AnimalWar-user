@@ -23,7 +23,6 @@ public class UserBuilding {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Building building;
-
     private int ownedQuantity;
     private int placedQuantity;
     private int upgrade;
