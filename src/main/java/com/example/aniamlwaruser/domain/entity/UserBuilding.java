@@ -20,7 +20,7 @@ public class UserBuilding {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-
+    //이슈테스트
     @ManyToOne(fetch = FetchType.LAZY)
     private Building building;
     private int ownedQuantity;
