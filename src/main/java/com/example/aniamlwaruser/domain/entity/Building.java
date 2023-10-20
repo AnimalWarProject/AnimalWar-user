@@ -3,8 +3,6 @@ package com.example.aniamlwaruser.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Builder
 @Entity
@@ -23,6 +21,7 @@ public class Building {
     private Integer ironRate;
     private Integer foodRate;
 
-    @OneToMany(mappedBy = "building")
-    private List<UserBuilding> userBuildings;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userUUID")
+    private User user;
 }

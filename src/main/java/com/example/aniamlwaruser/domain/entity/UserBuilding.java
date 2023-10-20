@@ -14,15 +14,18 @@ import lombok.Setter;
 @Setter
 public class UserBuilding {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name="userUUID")
     private User user;
 
-    //이슈테스트
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne
+    @JoinColumn(name="buildingId")
     private Building building;
+
     private int ownedQuantity;
     private int placedQuantity;
     private int upgrade;
