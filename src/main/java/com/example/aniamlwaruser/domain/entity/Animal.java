@@ -21,7 +21,7 @@ public class Animal {
     private Integer life;
     private Species species;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "userUUID")
     private User user;
 }
