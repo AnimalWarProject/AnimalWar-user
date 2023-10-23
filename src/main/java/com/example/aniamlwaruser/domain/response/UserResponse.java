@@ -7,11 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 
 @Getter
 @Setter
 @Builder
 public class UserResponse {
+
+    private UUID uuid;
     private String id;
     private String nickName;
     private int food;
