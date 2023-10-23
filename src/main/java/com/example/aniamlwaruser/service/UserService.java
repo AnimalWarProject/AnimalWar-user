@@ -61,9 +61,6 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByUserUUID(terrainRequestDto.getUserUUID());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setLand(terrainRequestDto.getLand());
-            user.setSea(terrainRequestDto.getSea());
-            user.setMountain(terrainRequestDto.getMountain());
             user.setLandForm(terrainRequestDto.getLandForm());
 
             userRepository.save(user);
