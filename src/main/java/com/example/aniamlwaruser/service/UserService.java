@@ -3,11 +3,8 @@ package com.example.aniamlwaruser.service;
 
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.User;
-import com.example.aniamlwaruser.domain.kafka.DrawConsumer;
-import com.example.aniamlwaruser.domain.kafka.DrawProducer;
+import com.example.aniamlwaruser.domain.kafka.DrawResultConsumer;
 import com.example.aniamlwaruser.domain.kafka.GenerateTerrainProducer;
-import com.example.aniamlwaruser.domain.request.DrawRequest;
-import com.example.aniamlwaruser.domain.response.DrawResultResponseDto;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final GenerateTerrainProducer generateTerrainProducer;
-    private final DrawProducer drawProducer;
-    private final DrawConsumer drawConsumer;
+    private final DrawResultConsumer drawResultConsumer;
 
 
     // 아이디로 회원 정보 조회
@@ -97,20 +93,6 @@ public class UserService {
                 user.setGold(user.getGold() - requiredGold);
             }
             generateTerrainProducer.requestTerrain(userUUID);
-        } else {
-            throw new RuntimeException("No user");
-        }
-    }
-
-    public List<DrawResultResponseDto> requestDraw(DrawRequest request) {
-        Optional<User> optionalUser = userRepository.findByUserUUID(request.userUUID());
-        System.out.println("service" + request.count());
-        System.out.println("service" + request.userUUID());
-        List<DrawResultResponseDto> list;
-        if (optionalUser.isPresent()) { // 유저의 정보가 존재한다면
-            drawProducer.requestDraw(request.count()); // kafka를 통해서 draw서비스를 사용
-            list = drawConsumer.getReceivedData();
-            return list;
         } else {
             throw new RuntimeException("No user");
         }
