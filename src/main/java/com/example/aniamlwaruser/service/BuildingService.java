@@ -13,7 +13,7 @@ import java.util.List;
 public class BuildingService {
     private final BuildingRepository buildingRepository;
 
-    public void saveBuilding() {
+    public void saveBuildings() {
         List<Building> buildings = List.of(
                 Building.builder()
                         .name("본부")
