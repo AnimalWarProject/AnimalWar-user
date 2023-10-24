@@ -7,6 +7,7 @@ import lombok.*;
 import java.util.List;
 import java.util.UUID;
 
+@Table(name = "users")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -44,8 +45,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Species species;
 
-    private int sea;
-    private int land;
-    private int mountain;
+    private int FreeTerrainNum;
+
     private LandForm landForm;
 }
