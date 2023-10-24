@@ -10,6 +10,7 @@ public class TopicConfig {
 
     // 1. topic 의 이름을 정의한다.
     public final static String animalMix = "animalMix";
+    public final static String buildingMix = "buildingMix";
 
     // 2. 정의한 topic 의 이름으로 topic 을 생성한다.
 
@@ -17,5 +18,11 @@ public class TopicConfig {
     @Bean
     public NewTopic animalMixTopic() {
         return new NewTopic(animalMix, 1, (short)1);
+    }
+
+
+    @Bean
+    public NewTopic buildingMixTopic() {
+        return new NewTopic(buildingMix, 1, (short)1);
     }
 }
