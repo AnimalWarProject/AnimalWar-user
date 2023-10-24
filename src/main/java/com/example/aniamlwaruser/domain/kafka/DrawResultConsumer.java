@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-public class DrawConsumer {
+public class DrawResultConsumer {
     private List<DrawResultResponseDto> receivedData;
 
     @KafkaListener(topics = "resultDraw", groupId = "Terrain")
@@ -17,7 +17,7 @@ public class DrawConsumer {
         System.out.println(result);
     }
 
-    public List<DrawResultResponseDto> getReceivedData() {
+    public List<DrawResultResponseDto> receivedData() {
         return receivedData;
     }
 }
