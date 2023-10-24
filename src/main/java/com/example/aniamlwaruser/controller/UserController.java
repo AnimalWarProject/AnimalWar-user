@@ -1,10 +1,13 @@
 package com.example.aniamlwaruser.controller;
 
+import com.example.aniamlwaruser.domain.request.DrawRequest;
+import com.example.aniamlwaruser.domain.response.DrawResultResponseDto;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -32,4 +35,10 @@ public class UserController {
     public void requestTerrain(@RequestBody UUID userUUID) {
         userService.requestTerrain(userUUID);
     }
+
+    @PostMapping("/draw") // draw 서비스
+    public List<DrawResultResponseDto> requestUser(@RequestBody DrawRequest request) {
+        return userService.requestDraw(request);
+    }
+
 }
