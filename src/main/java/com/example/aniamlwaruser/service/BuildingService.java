@@ -2,19 +2,18 @@ package com.example.aniamlwaruser.service;
 
 import com.example.aniamlwaruser.domain.entity.Building;
 import com.example.aniamlwaruser.domain.entity.Grade;
-import com.example.aniamlwaruser.domain.kafka.MixProducer;
+import com.example.aniamlwaruser.domain.kafka.MixProducerTest;
 import com.example.aniamlwaruser.repository.BuildingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BuildingService {
     private final BuildingRepository buildingRepository;
-    private final MixProducer mixProducer;
+    private final MixProducerTest mixProducer;
 
     public void saveBuildings() {
         List<Building> buildinglist = buildingRepository.saveAll(
@@ -72,7 +71,7 @@ public class BuildingService {
                         Building.builder().name("식물원").grade(Grade.LEGEND).attackPower(0).defencePower(120).life(0).woodRate(0).ironRate(0).foodRate(0).build()
          ));
 
-        mixProducer.sendBuilding(buildinglist);
+//        mixProducer.sendBuilding(buildinglist);
 
     }
 }

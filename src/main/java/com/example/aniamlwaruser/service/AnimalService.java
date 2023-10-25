@@ -3,7 +3,7 @@ package com.example.aniamlwaruser.service;
 import com.example.aniamlwaruser.domain.entity.Animal;
 import com.example.aniamlwaruser.domain.entity.Grade;
 import com.example.aniamlwaruser.domain.entity.Species;
-import com.example.aniamlwaruser.domain.kafka.MixProducer;
+import com.example.aniamlwaruser.domain.kafka.MixProducerTest;
 import com.example.aniamlwaruser.repository.AnimalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,10 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 public class AnimalService {
     private final AnimalRepository animalRepository;
-    // 카프카로 데이터 보내야되니까 아까 만들어놓은거 가져오기 위한 의존성 주입
-    private final MixProducer animalMixProducer;
+    // 카프카로 데이터 보내야되니까 아까 만들어놓은거 가져오기 위한 의존성 주입.
+    private final MixProducerTest animalMixProducer;
 
     public void saveAnimals() throws ExecutionException, InterruptedException {
-        // 카프카로 합성서비스로 토픽을 보내죠
-
         List<Animal> animalList = animalRepository.saveAll(List.of(
                 Animal.builder().name("말티즈").grade(Grade.NORMAL).attackPower(20).defencePower(12).life(85).species(Species.DOG).build(),
                 Animal.builder().name("시츄").grade(Grade.NORMAL).attackPower(22).defencePower(14).life(90).species(Species.DOG).build(),
@@ -325,7 +323,7 @@ public class AnimalService {
 
         // 7. 저장을 전부 했고 이제 저장한 걸 전부 다 카프카로 보내자.
         // Kafka 프로듀서로 동물 데이터를 보내기
-        animalMixProducer.send(animalList);
+//        animalMixProducer.send(animalList);
     }
 
 

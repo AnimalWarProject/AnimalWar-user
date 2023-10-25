@@ -17,14 +17,4 @@ public class AniamlwaruserApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AniamlwaruserApplication.class, args);
 	}
-
-	@Bean
-	public void saveAnimals() throws ExecutionException, InterruptedException {
-		animalService.saveAnimals();
-	};
-
-	@Bean
-	public void saveBuildings(){
-		buildingService.saveBuildings();
-	};
 }

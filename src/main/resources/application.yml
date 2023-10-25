@@ -11,13 +11,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-    show-sql: false
+    show-sql: true
 
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
       auto-offset-reset: latest
-      group-id: user1
+      group-id: user2
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
       properties:
