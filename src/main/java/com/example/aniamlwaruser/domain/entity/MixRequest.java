@@ -1,7 +1,5 @@
 package com.example.aniamlwaruser.domain.entity;
 
-import jakarta.persistence.*;
-
 import java.util.UUID;
 
 public class MixRequest {
@@ -10,6 +8,7 @@ public class MixRequest {
     private String userId;
     private String nickName;
     private EntityType entityType;
+    private Long animalId;
     private String name;
     private Grade grade;
 
@@ -20,6 +19,7 @@ public class MixRequest {
                 .userId(userId)
                 .nickName(nickName)
                 .entityType(entityType)
+                .animalId(animalId)
                 .name(name)
                 .grade(grade)
                 .build();

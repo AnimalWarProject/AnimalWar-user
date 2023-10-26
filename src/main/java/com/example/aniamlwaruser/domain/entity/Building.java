@@ -13,6 +13,7 @@ public class Building {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long buildingId;
     private String name;
+    @Enumerated(EnumType.STRING)
     private Grade grade;
     private Integer attackPower;
     private Integer defencePower;

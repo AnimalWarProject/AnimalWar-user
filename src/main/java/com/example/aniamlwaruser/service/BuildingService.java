@@ -1,10 +1,14 @@
 package com.example.aniamlwaruser.service;
 
+import com.example.aniamlwaruser.common.RestError;
+import com.example.aniamlwaruser.common.RestResult;
 import com.example.aniamlwaruser.domain.entity.Building;
 import com.example.aniamlwaruser.domain.entity.Grade;
 import com.example.aniamlwaruser.domain.kafka.MixProducerTest;
 import com.example.aniamlwaruser.repository.BuildingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +19,14 @@ public class BuildingService {
     private final BuildingRepository buildingRepository;
     private final MixProducerTest mixProducer;
 
-    public void saveBuildings() {
+
+    public ResponseEntity<RestResult<Object>> saveBuildings() {
+
+        if(!buildingRepository.findAll().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new RestResult<>("error",new RestError("DUPLICATE", "Data already exists")));
+        }
+
         List<Building> buildinglist = buildingRepository.saveAll(
                 List.of(
                         Building.builder().name("본부").grade(Grade.NORMAL).attackPower(0).defencePower(0).life(10000).woodRate(0).ironRate(0).foodRate(0).build(),
@@ -72,6 +83,7 @@ public class BuildingService {
          ));
 
 //        mixProducer.sendBuilding(buildinglist);
+        return  ResponseEntity.ok(new RestResult<>("success","Data saved successfully"));
 
     }
 }

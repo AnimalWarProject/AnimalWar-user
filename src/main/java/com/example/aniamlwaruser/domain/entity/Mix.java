@@ -1,10 +1,8 @@
 package com.example.aniamlwaruser.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.UUID;
 
@@ -23,7 +21,9 @@ public class Mix {
     private String nickName;
     @Enumerated(EnumType.STRING)
     private EntityType entityType;
+    private Long animalId;
     private String name;
     @Enumerated(EnumType.STRING)
     private Grade grade;
+
 }
