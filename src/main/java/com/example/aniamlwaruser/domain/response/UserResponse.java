@@ -1,6 +1,7 @@
 package com.example.aniamlwaruser.domain.response;
 
 import com.example.aniamlwaruser.domain.entity.Species;
+import com.example.aniamlwaruser.domain.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +29,20 @@ public class UserResponse {
     private String profileImage;
 
     private Species species;
+
+    public static UserResponse userResponseBuild(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .nickName(user.getNickName())
+                .food(user.getFood())
+                .iron(user.getIron())
+                .wood(user.getWood())
+                .gold(user.getGold())
+                .attackPower(user.getAttackPower())
+                .defensePower(user.getDefensePower())
+                .battlePoint(user.getBattlePoint())
+                .profileImage(user.getProfileImage())
+                .species(user.getSpecies())
+                .build();
+    }
 }
