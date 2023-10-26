@@ -1,18 +1,16 @@
 package com.example.aniamlwaruser.domain.kafka;
 
-import com.example.aniamlwaruser.domain.entity.Animal;
-import com.example.aniamlwaruser.domain.entity.Building;
+import com.example.aniamlwaruser.domain.request.MixRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
-public class MixProducerTest {
+public class MixProducer {
     // 4. 이곳에서 보내는 카프카 템플릿을 정의한다.
 //    private final KafkaTemplate<String, List<Animal>> kafkaTemplate;
 //    private final KafkaTemplate<String, List<Building>> buildingKafkaTemplate;
@@ -31,10 +29,14 @@ public class MixProducerTest {
 //    // 내가 카프카로 보내는 걸 써야할 로직은  AnimalService 여기에 있는 것 같으니 여기로 가보자.
 //
 //
-//
-//
 //    public void sendBuilding(List<Building> buildings) {
 //        CompletableFuture<SendResult<String, List<Building>>> send = buildingKafkaTemplate.send(TopicConfig.buildingMix, buildings);
-//
 //    }
+
+
+    private final KafkaTemplate<String, MixRequest> mixRequestKafkaTemplate;
+    public void sendMixRequest(MixRequest mixRequest) {
+        CompletableFuture<SendResult<String, MixRequest>> send = mixRequestKafkaTemplate.send(TopicConfig.mixRequest, mixRequest);
+    }
+
 }

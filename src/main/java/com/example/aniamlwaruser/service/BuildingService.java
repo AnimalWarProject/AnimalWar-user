@@ -4,7 +4,7 @@ import com.example.aniamlwaruser.common.RestError;
 import com.example.aniamlwaruser.common.RestResult;
 import com.example.aniamlwaruser.domain.entity.Building;
 import com.example.aniamlwaruser.domain.entity.Grade;
-import com.example.aniamlwaruser.domain.kafka.MixProducerTest;
+import com.example.aniamlwaruser.domain.kafka.MixProducer;
 import com.example.aniamlwaruser.repository.BuildingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BuildingService {
     private final BuildingRepository buildingRepository;
-    private final MixProducerTest mixProducer;
+    private final MixProducer mixProducer;
 
 
     public ResponseEntity<RestResult<Object>> saveBuildings() {

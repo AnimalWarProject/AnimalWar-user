@@ -5,7 +5,7 @@ import com.example.aniamlwaruser.common.RestResult;
 import com.example.aniamlwaruser.domain.entity.Animal;
 import com.example.aniamlwaruser.domain.entity.Grade;
 import com.example.aniamlwaruser.domain.entity.Species;
-import com.example.aniamlwaruser.domain.kafka.MixProducerTest;
+import com.example.aniamlwaruser.domain.kafka.MixProducer;
 import com.example.aniamlwaruser.repository.AnimalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 public class AnimalService {
     private final AnimalRepository animalRepository;
     // 카프카로 데이터 보내야되니까 아까 만들어놓은거 가져오기 위한 의존성 주입.
-    private final MixProducerTest animalMixProducer;
+    private final MixProducer animalMixProducer;
 
 
     @Bean

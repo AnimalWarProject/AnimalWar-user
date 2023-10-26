@@ -27,9 +27,14 @@ public class TopicConfig {
 //    }
 
     public final static String mixResult = "mixResult";
+    public final static String mixRequest = "mixRequest";
 
     @Bean
     public NewTopic mixResultTopic() {
         return new NewTopic(mixResult, 1, (short) 1);
+    }
+    @Bean
+    public NewTopic mixRequestTopic() {
+        return new NewTopic(mixRequest, 1, (short) 1);
     }
 }
