@@ -36,9 +36,9 @@ public class UserController {
         userService.requestTerrain(userUUID);
     }
 
-    @PostMapping("/draw") // draw 서비스
-    public List<DrawResultResponseDto> requestUser(@RequestBody DrawRequest request) {
-        return userService.requestDraw(request);
-    }
+//    @PostMapping("/draw") // draw 서비스
+//    public List<DrawResultResponseDto> requestUser(@RequestBody DrawRequest request) {
+//        return userService.requestDraw(request);
+//    }
 
 }

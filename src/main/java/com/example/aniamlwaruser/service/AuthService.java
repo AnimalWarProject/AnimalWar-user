@@ -43,6 +43,7 @@ public class AuthService {
 
         //카프카
         UserResponse build = UserResponse.builder()
+                .uuid(user.getUserUUID())
                 .id(user.getId())
                 .nickName(user.getNickName())
                 .food(user.getFood())

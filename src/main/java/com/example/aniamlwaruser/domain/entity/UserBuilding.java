@@ -12,7 +12,7 @@ import lombok.*;
 @Setter
 public class UserBuilding {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne

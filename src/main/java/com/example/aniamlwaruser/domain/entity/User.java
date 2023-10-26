@@ -35,12 +35,11 @@ public class User {
 
     private String profileImage;
 
-
-    @OneToMany(mappedBy = "user")
-    private List<UserAnimal> animalInventory;
-
-    @OneToMany(mappedBy = "user")
-    private List<UserBuilding> buildingInventory;
+//    @OneToMany(mappedBy = "user")
+//    private List<UserAnimal> animalInventory;
+//
+//    @OneToMany(mappedBy = "user")
+//    private List<UserBuilding> buildingInventory;
 
     @Enumerated(EnumType.STRING)
     private Species species;
@@ -48,4 +47,11 @@ public class User {
     private int FreeTerrainNum;
 
     private LandForm landForm;
+
+    public void exchangeGold(int amount){
+        this.food = food-2000*amount;
+        this.wood = wood-2000*amount;
+        this.iron = iron-2000*amount;
+        this.gold = gold+1000*amount;
+    }
 }
