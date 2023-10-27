@@ -26,4 +26,10 @@ public class UserAnimal {
     private int ownedQuantity;
     private int placedQuantity;
     private int upgrade;
+
+    public void insertDraw(Animal animal, Integer cnt) {
+        this.animal = animal;
+        this.ownedQuantity=cnt;
+    }
+
 }

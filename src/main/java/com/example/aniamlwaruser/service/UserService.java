@@ -1,10 +1,16 @@
 package com.example.aniamlwaruser.service;
 
 
+import com.example.aniamlwaruser.domain.dto.SendDrawResponse;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
+import com.example.aniamlwaruser.domain.entity.Animal;
 import com.example.aniamlwaruser.domain.entity.User;
+import com.example.aniamlwaruser.domain.entity.UserAnimal;
 import com.example.aniamlwaruser.domain.kafka.GenerateTerrainProducer;
+import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
+import com.example.aniamlwaruser.repository.AnimalINVTRepository;
+import com.example.aniamlwaruser.repository.AnimalRepository;
 import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -12,14 +18,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AnimalRepository animalRepository;
     private final GenerateTerrainProducer generateTerrainProducer;
+    private final AnimalINVTRepository animalINVTRepository;
 
 
     // 아이디로 회원 정보 조회
@@ -62,6 +73,45 @@ public class UserService {
         generateTerrainProducer.requestTerrain(userUUID);
     }
 
+    public void requestDraw(DrawRequest request){
+        User byUserUUID = userRepository.findByUserUUID(request.userUUID()).orElseThrow(()-> new RuntimeException("Not Found User"));
+        int requiredGold = request.count() * 1000;
+        if (byUserUUID.getGold() >= requiredGold){
+            byUserUUID.minusGold(requiredGold);
+        }else {
+            throw new RuntimeException("Not enough gold");
+        }
+    }
+
+    public void insertDrawResponse(List<SendDrawResponse> result) {
+        Map<String, Long> animalCountMap = result.stream()
+                .collect(Collectors.groupingBy(SendDrawResponse::getName, Collectors.counting()));
+
+        User byUserUUID = userRepository.findByUserUUID(result.get(0).getUserUUID())
+                .orElseThrow(() -> new RuntimeException("Not Found User"));
+
+        for (Map.Entry<String, Long> entry : animalCountMap.entrySet()) {
+            String animalName = entry.getKey();
+            Long count = entry.getValue();
+
+            Animal animal = animalRepository.findByName(animalName)
+                    .orElseThrow(() -> new IllegalArgumentException("Animal not found with name: " + animalName));
+
+            UserAnimal userAnimal = animalINVTRepository.findByUserAndAnimal(byUserUUID, animal)
+                    .orElseGet(() -> {
+                        UserAnimal newUserAnimal = new UserAnimal();
+                        newUserAnimal.setUser(byUserUUID);
+                        newUserAnimal.setAnimal(animal);
+                        newUserAnimal.setOwnedQuantity(0);
+                        newUserAnimal.setPlacedQuantity(0);
+                        newUserAnimal.setUpgrade(0);
+                        return newUserAnimal;
+                    });
+
+            userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + count.intValue());
+            animalINVTRepository.save(userAnimal);
+        }
+    }
 
     // 매일 자정 무료 맵 횟수 3회로 주기
     @Scheduled(cron = "0 0 0 * * ?")

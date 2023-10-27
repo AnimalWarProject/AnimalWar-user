@@ -12,13 +12,13 @@ public class ExchangeService {
 
     private final UserRepository userRepository;
 
-    public void exchangeGold(ExchangeRequest exchangeRequest){
-
-        User user = userRepository.findByUserUUID(exchangeRequest.uuid()).get();
-
-        user.setFood(user.getFood()-2000*exchangeRequest.amount());
-        user.setWood(user.getWood()-2000*exchangeRequest.amount());
-        user.setIron(user.getIron()-2000*exchangeRequest.amount());
-        user.setGold(user.getGold()+1000*exchangeRequest.amount());
-    }
+//    public void exchangeGold(ExchangeRequest exchangeRequest){
+//
+//        User user = userRepository.findByUserUUID(exchangeRequest.uuid()).get();
+//
+//        user.setFood(user.getFood()-2000*exchangeRequest.amount());
+//        user.setWood(user.getWood()-2000*exchangeRequest.amount());
+//        user.setIron(user.getIron()-2000*exchangeRequest.amount());
+//        user.setGold(user.getGold()+1000*exchangeRequest.amount());
+//    }
 }

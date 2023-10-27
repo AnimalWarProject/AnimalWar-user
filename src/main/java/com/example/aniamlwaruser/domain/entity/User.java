@@ -3,6 +3,7 @@ package com.example.aniamlwaruser.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,10 +15,9 @@ import java.util.UUID;
 @Builder
 @Getter
 public class User {
-    @Id
+    @Id @Column(columnDefinition = "CHAR(36)")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userUUID;
-
     private String id;
     private String password;
     private String nickName;
