@@ -38,11 +38,11 @@ public class User {
 
     private String profileImage;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<UserAnimal> animalInventory;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<UserBuilding> buildingInventory;
+    @OneToMany(mappedBy = "user")
+    private List<UserAnimal> animalInventory;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserBuilding> buildingInventory;
 
     @Enumerated(EnumType.STRING)
     private Species species;
@@ -90,5 +90,21 @@ public class User {
     public void addGold ( int amount){
         this.gold += amount;
 
+    }
+
+    public void updateId(String id) {
+        this.id = id;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }
