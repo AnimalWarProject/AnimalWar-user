@@ -1,10 +1,17 @@
 package com.example.aniamlwaruser.controller;
 
+import com.example.aniamlwaruser.config.JwtService;
+import com.example.aniamlwaruser.config.TokenInfo;
+import com.example.aniamlwaruser.domain.request.DrawRequest;
+import com.example.aniamlwaruser.domain.response.DrawResultResponseDto;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -15,6 +22,7 @@ import java.util.UUID;
 
 public class UserController {
     private final UserService userService;
+    private final JwtService jwtService;
 
 
 
@@ -28,8 +36,18 @@ public class UserController {
         return userService.findUserByUserUUId(userUUID);
     }
 
-    @PostMapping("/requestTerrain")
-    public void requestTerrain(@RequestBody UUID userUUID) {
+    @PostMapping("/terrain")
+    public ResponseEntity<String> requestTerrain(@RequestHeader String accessToken) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+
         userService.requestTerrain(userUUID);
+        return ResponseEntity.ok("맵 생성 완료");
     }
+
+//    @PostMapping("/draw") // draw 서비스
+//    public List<DrawResultResponseDto> requestUser(@RequestBody DrawRequest request) {
+//        return userService.requestDraw(request);
+//    }
+
 }

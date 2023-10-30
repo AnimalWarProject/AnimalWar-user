@@ -23,6 +23,6 @@ public class Animal {
     private Integer life;
     private Species species;
 
-    @OneToMany(mappedBy = "animal")
-    private List<UserAnimal> userAnimals;
+//    @OneToMany(mappedBy = "animal")
+//    private List<UserAnimal> userAnimals;
 }
