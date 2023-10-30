@@ -4,6 +4,7 @@ package com.example.aniamlwaruser.service;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.kafka.GenerateTerrainProducer;
+import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,25 @@ public class UserService {
         return UserResponse.userResponseBuild(user);
     }
 
+    public void updateUser(UUID userUUID, UserUpdateRequest request) {
+        User existingUser = userRepository.findByUserUUID(userUUID)
+                .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND UUID: " + userUUID));
+
+        if (request.getId() != null) {
+            existingUser.updateId(request.getId());
+        }
+        if (request.getPassword() != null) {
+            existingUser.updatePassword(request.getPassword());
+        }
+        if (request.getNickName() != null) {
+            existingUser.updateNickName(request.getNickName());
+        }
+        if (request.getProfileImage() != null) {
+            existingUser.updateProfileImage(request.getProfileImage());
+        }
+
+        userRepository.save(existingUser);
+    }
     public void updateUserLandForm(TerrainResponseDto terrainResponseDto) {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())
                 .orElseThrow(() -> new IllegalArgumentException("User not found UUID: " + terrainResponseDto.getUserUUID()));
