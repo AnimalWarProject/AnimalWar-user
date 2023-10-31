@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -38,11 +39,11 @@ public class User {
 
     private String profileImage;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<UserAnimal> animalInventory;
-//
-//    @OneToMany(mappedBy = "user")
-//    private List<UserBuilding> buildingInventory;
+    @OneToMany(mappedBy = "user")
+    private List<UserAnimal> animalInventory;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserBuilding> buildingInventory;
 
     @Enumerated(EnumType.STRING)
     private Species species;

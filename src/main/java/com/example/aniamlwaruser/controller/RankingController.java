@@ -1,6 +1,7 @@
 package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.domain.entity.User;
+import com.example.aniamlwaruser.domain.response.NickNameResponse2;
 import com.example.aniamlwaruser.service.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,17 +17,17 @@ public class RankingController {
     private final RankingService rankingService;
 
     @GetMapping("/byBattlePoint")
-    public List<User> findTopUserByBattlePoint(){
+    public List<NickNameResponse2> findTopUserByBattlePoint(){
         return rankingService.findTopUserByBattlePoint();
     }
 
     @GetMapping("/byPower")
-    public List<User> findTopUserByPower(){
+    public List<NickNameResponse2> findTopUserByPower(){
         return rankingService.findTopUserByPower();
     }
 
     @GetMapping("/byGold")
-    public List<User> findTopUserByGold(){
+    public List<NickNameResponse2> findTopUserByGold(){
         return rankingService.findTopUserByGold();
     }
 }

@@ -36,6 +36,7 @@ public class SecurityConfig {
                         AntPathRequestMatcher.antMatcher("/api/v1/user/findById/**")
                        ,AntPathRequestMatcher.antMatcher("/api/v1/user/findByUUID/**")
                        ,AntPathRequestMatcher.antMatcher("/api/v1/auth/**")
+                                ,AntPathRequestMatcher.antMatcher("/api/v1/rank/**")
                 )
                         .permitAll()
                         .anyRequest().authenticated()
