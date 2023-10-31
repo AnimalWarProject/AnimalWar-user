@@ -1,6 +1,7 @@
 package com.example.aniamlwaruser.service;
 
 
+import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.kafka.GenerateTerrainProducer;
@@ -93,4 +94,5 @@ public class UserService {
         }
         userRepository.saveAll(allUsers);
     }
+
 }

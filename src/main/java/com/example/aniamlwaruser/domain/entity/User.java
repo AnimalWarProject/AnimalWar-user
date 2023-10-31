@@ -50,6 +50,7 @@ public class User {
 
     private int freeTerrainNum;
 
+    @Enumerated(EnumType.STRING)
     private LandForm landForm;
 
 
