@@ -92,4 +92,20 @@ public class User {
         this.gold += amount;
 
     }
+
+    public void updateId(String id) {
+        this.id = id;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }

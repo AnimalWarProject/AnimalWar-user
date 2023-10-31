@@ -10,6 +10,7 @@ import com.example.aniamlwaruser.domain.response.LoginResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.exception.InvalidPasswordException;
 import com.example.aniamlwaruser.exception.UserNotFoundException;
+import com.example.aniamlwaruser.repository.RefreshTokenRepository;
 import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final MatchProducer matchProducer;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public void signUp(SignupRequest request) {
@@ -82,4 +84,10 @@ public class AuthService {
         return new LoginResponse(accessToken, refreshTokenString);
     }
 
+
+    public String getRefreshToken(String id) {
+        return refreshTokenRepository.findById(id)
+                .map(RefreshToken::getToken)
+                .orElseThrow(() -> new RuntimeException("Refresh Token not found for the given user id."));
+    }
 }
