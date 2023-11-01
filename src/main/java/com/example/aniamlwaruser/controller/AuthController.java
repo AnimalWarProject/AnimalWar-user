@@ -33,6 +33,10 @@ public class AuthController {
 
     @GetMapping("/me")
     public TokenInfo me(@AuthenticationPrincipal TokenInfo tokenInfo){
+
+        System.out.println(tokenInfo.getId());
+        System.out.println(tokenInfo.getNickName());
+
         return tokenInfo;
     }
 

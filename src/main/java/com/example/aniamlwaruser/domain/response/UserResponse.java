@@ -1,5 +1,6 @@
 package com.example.aniamlwaruser.domain.response;
 
+import com.example.aniamlwaruser.domain.entity.LandForm;
 import com.example.aniamlwaruser.domain.entity.Species;
 import com.example.aniamlwaruser.domain.entity.User;
 import lombok.Builder;
@@ -24,11 +25,14 @@ public class UserResponse {
 
     private int attackPower;
     private int defensePower;
+    private int life;
     private int battlePoint;
 
     private String profileImage;
 
     private Species species;
+
+    private LandForm landForm;
 
     public static UserResponse userResponseBuild(User user) {
         return UserResponse.builder()
@@ -40,9 +44,11 @@ public class UserResponse {
                 .gold(user.getGold())
                 .attackPower(user.getAttackPower())
                 .defensePower(user.getDefensePower())
+                .life(user.getLife())
                 .battlePoint(user.getBattlePoint())
                 .profileImage(user.getProfileImage())
                 .species(user.getSpecies())
+                .landForm(user.getLandForm())
                 .build();
     }
 }

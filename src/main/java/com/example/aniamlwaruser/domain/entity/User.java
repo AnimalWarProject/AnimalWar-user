@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -49,6 +50,7 @@ public class User {
 
     private int freeTerrainNum;
 
+    @Enumerated(EnumType.STRING)
     private LandForm landForm;
 
 

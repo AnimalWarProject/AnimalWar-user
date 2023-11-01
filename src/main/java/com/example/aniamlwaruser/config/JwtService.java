@@ -99,7 +99,7 @@ public class JwtService {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getId())
-                .setExpiration(new Date(System.currentTimeMillis() + (1000L * 60 * 20)))
+                .setExpiration(new Date(System.currentTimeMillis() + (1000L * 60 * 20*60)))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }

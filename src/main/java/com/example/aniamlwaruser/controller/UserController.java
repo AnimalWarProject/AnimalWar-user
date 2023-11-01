@@ -5,8 +5,10 @@ import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -23,6 +25,10 @@ public class UserController {
     private final JwtService jwtService;
 
 
+    @GetMapping("")
+    public UserResponse findByToken(@AuthenticationPrincipal TokenInfo tokenInfo){
+        return userService.findUserByUserUUId(tokenInfo.getUserUUID());
+    }
 
     @GetMapping("/findByID/{id}")
     public UserResponse findByUserId(@PathVariable String id){
