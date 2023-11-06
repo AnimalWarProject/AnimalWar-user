@@ -1,6 +1,7 @@
 package com.example.aniamlwaruser.service;
 
 import com.example.aniamlwaruser.config.JwtService;
+import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.entity.RefreshToken;
 import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.kafka.MatchProducer;
@@ -89,5 +90,12 @@ public class AuthService {
         return refreshTokenRepository.findById(id)
                 .map(RefreshToken::getToken)
                 .orElseThrow(() -> new RuntimeException("Refresh Token not found for the given user id."));
+    }
+
+
+    public void logout(TokenInfo tokenInfo) {
+        String userId = tokenInfo.getId();
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(userId);
+        refreshToken.ifPresent(refreshTokenRepository::delete);
     }
 }
