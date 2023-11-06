@@ -26,6 +26,13 @@ public class AuthController {
         return authService.login(loginRequest);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@AuthenticationPrincipal TokenInfo tokenInfo) {
+        authService.logout(tokenInfo);
+        return ResponseEntity.ok().body("User logged out successfully");
+    }
+
+
     @PostMapping("/signup")
     public void signup(@RequestBody SignupRequest signupRequest){
         authService.signUp(signupRequest);
