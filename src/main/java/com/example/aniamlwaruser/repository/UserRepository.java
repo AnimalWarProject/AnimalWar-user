@@ -19,6 +19,8 @@ public interface UserRepository
 
     Optional<User> findByUserUUID(UUID userUUID);
 
+    Optional<User> findByNickname(String nickName);
+
 
     @Query("SELECT new com.example.aniamlwaruser.domain.response.NickNameResponse2(u.nickName)" +
             " FROM User u ORDER BY u.battlePoint DESC LIMIT 100")
