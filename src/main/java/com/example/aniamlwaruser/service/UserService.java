@@ -40,6 +40,14 @@ public class UserService {
         return UserResponse.userResponseBuild(user);
     }
 
+    public UserResponse findUserByNickName(String nickName) {
+        User user = userRepository.findByNickname(nickName)
+                .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND USERID: " + nickName));
+
+        return UserResponse.userResponseBuild(user);
+    }
+
+
     public void updateUser(UUID userUUID, UserUpdateRequest request) {
         User existingUser = userRepository.findByUserUUID(userUUID)
                 .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND UUID: " + userUUID));

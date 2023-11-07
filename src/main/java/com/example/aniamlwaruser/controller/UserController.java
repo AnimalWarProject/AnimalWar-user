@@ -40,6 +40,13 @@ public class UserController {
         return userService.findUserByUserUUId(userUUID);
     }
 
+    @GetMapping("/findByNickName/{nickName}")
+    public UserResponse findByNickName(@PathVariable String nickName){
+        return userService.findUserByNickName(nickName);
+    }
+
+
+
     @PostMapping("/update")
     public ResponseEntity<String> updateUser(@RequestHeader String accessToken,
                                              @RequestBody UserUpdateRequest request) {
