@@ -3,12 +3,15 @@ package com.example.aniamlwaruser.service;
 import com.example.aniamlwaruser.domain.dto.SendResultUpgrade;
 import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.request.INVTRequest;
+import com.example.aniamlwaruser.domain.response.GetAllResponse;
 import com.example.aniamlwaruser.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +23,14 @@ public class INVTService {
     private final AnimalINVTRepository animalINVTRepository;
     private final BuildingINVTRepository buildingINVTRepository;
 
+
+    public List<GetAllResponse> getAnimals(UUID userUUID){
+        return animalINVTRepository.findByUserUUID(userUUID);
+    }
+
+    public List<GetAllResponse> getBuildings(UUID userUUID){
+        return buildingINVTRepository.findByUserUUID(userUUID);
+    }
 
     public void insertAnimal(INVTRequest invtRequest){
 
