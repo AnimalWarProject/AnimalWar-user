@@ -93,6 +93,7 @@ public class JwtService {
         claims.put("userUUID", user.getUserUUID());
         claims.put("id", user.getId());
         claims.put("nickName", user.getNickName());
+        claims.put("profileImage", user.getProfileImage());
 
         Key signingKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
 
@@ -123,6 +124,7 @@ public class JwtService {
                 .userUUID(user.getUserUUID())
                 .id(user.getId())
                 .nickName(user.getNickName())
+                .profileImage(user.getProfileImage())
                 .build();
     }
 }

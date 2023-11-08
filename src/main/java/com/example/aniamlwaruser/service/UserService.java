@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public UserResponse findUserByNickName(String nickName) {
-        User user = userRepository.findByNickname(nickName)
+        User user = userRepository.findByNickName(nickName)
                 .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND USERID: " + nickName));
 
         return UserResponse.userResponseBuild(user);

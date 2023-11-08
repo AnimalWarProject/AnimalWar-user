@@ -19,6 +19,7 @@ public class TokenInfo implements UserDetails {
     private UUID userUUID;
     private String id;
     private String nickName;
+    private String profileImage;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
