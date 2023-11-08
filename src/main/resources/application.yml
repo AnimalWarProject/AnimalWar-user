@@ -10,7 +10,7 @@ spring:
     password: 1q2w3e4r!!
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
 
   kafka:
