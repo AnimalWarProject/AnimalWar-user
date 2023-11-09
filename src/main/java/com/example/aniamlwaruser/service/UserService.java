@@ -1,10 +1,9 @@
 package com.example.aniamlwaruser.service;
 
 
-import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.User;
-import com.example.aniamlwaruser.domain.kafka.GenerateTerrainProducer;
+import com.example.aniamlwaruser.domain.kafka.UpdateTerrainProducer;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.UserRepository;
@@ -21,7 +20,7 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final GenerateTerrainProducer generateTerrainProducer;
+    private final UpdateTerrainProducer updateTerrainProducer;
 
 
     // 아이디로 회원 정보 조회
@@ -88,7 +87,7 @@ public class UserService {
             }
             user.minusGold(requiredGold);
         }
-        generateTerrainProducer.requestTerrain(userUUID);
+        updateTerrainProducer.updateTerrain(userUUID);
     }
 
 
