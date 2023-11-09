@@ -17,10 +17,12 @@ public class Animal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long animalId;
     private String name;
+    @Enumerated(EnumType.STRING)
     private Grade grade;
     private Integer attackPower;
     private Integer defencePower;
     private Integer life;
+    @Enumerated(EnumType.STRING)
     private Species species;
 
 //    @OneToMany(mappedBy = "animal")

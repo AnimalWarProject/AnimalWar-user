@@ -20,6 +20,7 @@ public class Building {
     private Integer woodRate;
     private Integer ironRate;
     private Integer foodRate;
+    private BuildingType buildingType;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "userUUID")
