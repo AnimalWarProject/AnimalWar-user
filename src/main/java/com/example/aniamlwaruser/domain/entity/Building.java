@@ -20,8 +20,9 @@ public class Building {
     private Integer woodRate;
     private Integer ironRate;
     private Integer foodRate;
+    private BuildingType buildingType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userUUID")
-    private User user;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userUUID")
+//    private User user;
 }

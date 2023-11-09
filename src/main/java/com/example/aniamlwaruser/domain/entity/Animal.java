@@ -25,6 +25,6 @@ public class Animal {
     @Enumerated(EnumType.STRING)
     private Species species;
 
-    @OneToMany(mappedBy = "animal")
-    private List<UserAnimal> userAnimals;
+//    @OneToMany(mappedBy = "animal")
+//    private List<UserAnimal> userAnimals;
 }

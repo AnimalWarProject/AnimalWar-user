@@ -8,6 +8,7 @@ import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.entity.UserAnimal;
 import com.example.aniamlwaruser.domain.kafka.GenerateTerrainProducer;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
+import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.AnimalINVTRepository;
 import com.example.aniamlwaruser.repository.AnimalRepository;
@@ -16,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -49,6 +48,33 @@ public class UserService {
         return UserResponse.userResponseBuild(user);
     }
 
+    public UserResponse findUserByNickName(String nickName) {
+        User user = userRepository.findByNickName(nickName)
+                .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND USERID: " + nickName));
+
+        return UserResponse.userResponseBuild(user);
+    }
+
+
+    public void updateUser(UUID userUUID, UserUpdateRequest request) {
+        User existingUser = userRepository.findByUserUUID(userUUID)
+                .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND UUID: " + userUUID));
+
+        if (request.getId() != null) {
+            existingUser.updateId(request.getId());
+        }
+        if (request.getPassword() != null) {
+            existingUser.updatePassword(request.getPassword());
+        }
+        if (request.getNickName() != null) {
+            existingUser.updateNickName(request.getNickName());
+        }
+        if (request.getProfileImage() != null) {
+            existingUser.updateProfileImage(request.getProfileImage());
+        }
+
+        userRepository.save(existingUser);
+    }
     public void updateUserLandForm(TerrainResponseDto terrainResponseDto) {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())
                 .orElseThrow(() -> new IllegalArgumentException("User not found UUID: " + terrainResponseDto.getUserUUID()));
@@ -123,4 +149,5 @@ public class UserService {
         }
         userRepository.saveAll(allUsers);
     }
+
 }

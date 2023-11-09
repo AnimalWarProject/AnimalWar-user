@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 public class UserAnimal {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne
@@ -20,7 +20,7 @@ public class UserAnimal {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name ="ainmalId")
+    @JoinColumn(name ="animalId")
     private Animal animal;
 
     private int ownedQuantity;
