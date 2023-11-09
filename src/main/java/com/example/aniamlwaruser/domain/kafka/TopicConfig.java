@@ -9,11 +9,21 @@ import org.springframework.stereotype.Component;
 public class TopicConfig {
     //    public final static String customerTopic = "customer";
     public final static String matchTopic = "match";
+    public final static String mixResult = "mix";
 
     @Bean
     public NewTopic ownerTopic(){
         return TopicBuilder
                 .name(matchTopic)
+                .replicas(1)
+                .partitions(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic mixResultTopic(){
+        return TopicBuilder
+                .name(mixResult)
                 .replicas(1)
                 .partitions(1)
                 .build();
