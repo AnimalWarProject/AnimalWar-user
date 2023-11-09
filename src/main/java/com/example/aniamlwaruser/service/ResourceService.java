@@ -35,6 +35,21 @@ public class ResourceService {
                     totalWoodRate += userBuilding.getBuilding().getWoodRate() * userBuilding.getPlacedQuantity();
                 }
             }
+            switch (user.getLandForm()) {
+                case MOUNTAIN -> {
+                    totalWoodRate *= 1.3;
+                    totalFoodRate *= 0.7;
+                }
+                case SEA -> {
+                    totalIronRate *= 1.3;
+                    totalWoodRate *= 0.7;
+                }
+                case LAND -> {
+                    totalFoodRate *= 1.3;
+                    totalIronRate *= 0.7;
+                }
+            }
+
             user.addFood(totalFoodRate);
             user.addIron(totalIronRate);
             user.addWood(totalWoodRate);
