@@ -22,7 +22,7 @@ public class Building {
     private Integer foodRate;
     private BuildingType buildingType;
 
-//    @OneToMany(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "userUUID")
-//    private User user;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userUUID")
+    private User user;
 }

@@ -2,6 +2,7 @@ package com.example.aniamlwaruser.service;
 
 
 import com.example.aniamlwaruser.domain.dto.SendDrawResponse;
+import com.example.aniamlwaruser.domain.dto.MixRequest;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.Animal;
 import com.example.aniamlwaruser.domain.entity.User;
@@ -12,11 +13,14 @@ import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.AnimalINVTRepository;
 import com.example.aniamlwaruser.repository.AnimalRepository;
+import com.example.aniamlwaruser.domain.kafka.UpdateTerrainProducer;
+import com.example.aniamlwaruser.repository.UserAnimalRepository;
 import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,6 +34,8 @@ public class UserService {
     private final AnimalRepository animalRepository;
     private final GenerateTerrainProducer generateTerrainProducer;
     private final AnimalINVTRepository animalINVTRepository;
+    private final UpdateTerrainProducer updateTerrainProducer;
+    private final UserAnimalRepository userAnimalRepository;
 
 
     // 아이디로 회원 정보 조회
@@ -75,6 +81,7 @@ public class UserService {
 
         userRepository.save(existingUser);
     }
+
     public void updateUserLandForm(TerrainResponseDto terrainResponseDto) {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())
                 .orElseThrow(() -> new IllegalArgumentException("User not found UUID: " + terrainResponseDto.getUserUUID()));
@@ -91,12 +98,12 @@ public class UserService {
         if (user.getFreeTerrainNum() > 0) {
             user.minusFreeTerrainNum();
         } else {
-            if(user.getGold() < requiredGold) {
+            if (user.getGold() < requiredGold) {
                 throw new RuntimeException("Not enough gold");
             }
             user.minusGold(requiredGold);
         }
-        generateTerrainProducer.requestTerrain(userUUID);
+        updateTerrainProducer.updateTerrain(userUUID);
     }
 
     public void requestDraw(DrawRequest request){
@@ -150,4 +157,43 @@ public class UserService {
         userRepository.saveAll(allUsers);
     }
 
+
+    @Transactional
+    public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
+        // saveInventory 실행
+        saveInventory(mixRequest);
+        // deleteMixed 실행
+        deleteMixed(mixRequest.getUserAnimalList());
+    }
+
+    public void saveInventory(MixRequest mixRequest) {
+        User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Animal animal = animalRepository.findById(mixRequest.getAnimalId())
+                .orElseThrow(() -> new RuntimeException("Animal not found"));
+
+        // Check if the animal already exists in the user's inventory
+        UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
+                .orElseGet(() -> UserAnimal.builder()
+                        .user(user)
+                        .animal(animal)
+                        .ownedQuantity(0) // If not present, start with zero
+                        .placedQuantity(0) // Assume new animal is not placed
+                        .upgrade(0) // Assume upgrades start at 0 for new animal
+                        .build());
+
+        // Update owned quantity
+        userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
+
+        // Save the updated/ new user animal
+        userAnimalRepository.save(userAnimal);
+    }
+
+    public void deleteMixed(List<Long> selectedUserAnimalIds) {
+        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
+            // Batch delete by IDs to improve performance
+            userAnimalRepository.deleteAllByUserAnimalIdIn(selectedUserAnimalIds);
+        }
+    }
 }
