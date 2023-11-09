@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Builder
 @Table(name="user_animals")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserAnimal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,10 +20,10 @@ public class UserAnimal {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name ="animalId")
+    @JoinColumn(name ="ainmalId")
     private Animal animal;
 
     private int ownedQuantity;
-    private int placedQuantity;
+    private int batchedQuantity;
     private int upgrade;
 }

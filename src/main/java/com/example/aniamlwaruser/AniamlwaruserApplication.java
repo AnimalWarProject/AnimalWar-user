@@ -1,17 +1,20 @@
 package com.example.aniamlwaruser;
 
+import com.example.aniamlwaruser.service.AnimalService;
+import com.example.aniamlwaruser.service.BuildingService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.context.annotation.Bean;
+
+import java.util.concurrent.ExecutionException;
 
 @SpringBootApplication
-@EnableAsync
-@EnableScheduling
+@RequiredArgsConstructor
 public class AniamlwaruserApplication {
-
+	private final AnimalService animalService;
+	private final BuildingService buildingService;
 	public static void main(String[] args) {
 		SpringApplication.run(AniamlwaruserApplication.class, args);
 	}
-
 }

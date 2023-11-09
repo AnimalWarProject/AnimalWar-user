@@ -1,10 +1,12 @@
 package com.example.aniamlwaruser.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Builder
 @Table(name="user_buildings")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,6 +27,6 @@ public class UserBuilding {
     private Building building;
 
     private int ownedQuantity;
-    private int placedQuantity;
+    private int batchedQuantity;
     private int upgrade;
 }

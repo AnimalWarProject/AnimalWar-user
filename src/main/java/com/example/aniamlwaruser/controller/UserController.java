@@ -1,16 +1,10 @@
 package com.example.aniamlwaruser.controller;
 
-import com.example.aniamlwaruser.config.JwtService;
-import com.example.aniamlwaruser.config.TokenInfo;
-import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
+import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.UUID;
 
@@ -22,13 +16,9 @@ import java.util.UUID;
 
 public class UserController {
     private final UserService userService;
-    private final JwtService jwtService;
+//    private final UserProducer userProducer;
 
 
-    @GetMapping("")
-    public UserResponse findByToken(@AuthenticationPrincipal TokenInfo tokenInfo){
-        return userService.findUserByUserUUId(tokenInfo.getUserUUID());
-    }
 
     @GetMapping("/findByID/{id}")
     public UserResponse findByUserId(@PathVariable String id){
@@ -40,37 +30,8 @@ public class UserController {
         return userService.findUserByUserUUId(userUUID);
     }
 
-    @GetMapping("/findByNickName/{nickName}")
-    public UserResponse findByNickName(@PathVariable String nickName){
-        return userService.findUserByNickName(nickName);
+    @PostMapping("/requestTerrain")
+    public void requestTerrain(@RequestBody TerrainRequestDto terrainRequestDto) {
+//        userProducer.requestTerrain(terrainRequestDto);
     }
-
-
-
-    @PostMapping("/update")
-    public ResponseEntity<String> updateUser(@RequestHeader String accessToken,
-                                             @RequestBody UserUpdateRequest request) {
-        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
-        UUID userUUID = tokenInfo.getUserUUID();
-
-        userService.updateUser(userUUID, request);
-        return ResponseEntity.ok("유저 정보 변경 완료");
-    }
-
-
-
-    @PostMapping("/terrain")
-    public ResponseEntity<String> requestTerrain(@RequestHeader String accessToken) {
-        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
-        UUID userUUID = tokenInfo.getUserUUID();
-
-        userService.requestTerrain(userUUID);
-        return ResponseEntity.ok("맵 생성 완료");
-    }
-
-//    @PostMapping("/draw") // draw 서비스
-//    public List<DrawResultResponseDto> requestUser(@RequestBody DrawRequest request) {
-//        return userService.requestDraw(request);
-//    }
-
 }

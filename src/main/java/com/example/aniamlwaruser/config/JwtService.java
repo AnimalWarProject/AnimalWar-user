@@ -93,14 +93,13 @@ public class JwtService {
         claims.put("userUUID", user.getUserUUID());
         claims.put("id", user.getId());
         claims.put("nickName", user.getNickName());
-        claims.put("profileImage", user.getProfileImage());
 
         Key signingKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getId())
-                .setExpiration(new Date(System.currentTimeMillis() + (1000L * 60 * 20*60)))
+                .setExpiration(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 3)))
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -124,7 +123,6 @@ public class JwtService {
                 .userUUID(user.getUserUUID())
                 .id(user.getId())
                 .nickName(user.getNickName())
-                .profileImage(user.getProfileImage())
                 .build();
     }
 }

@@ -2,6 +2,9 @@ package com.example.aniamlwaruser.repository;
 
 import com.example.aniamlwaruser.domain.entity.Building;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
 
-public interface BuildingRepository extends JpaRepository<Building,Long> {
+@Repository
+public interface BuildingRepository extends JpaRepository<Building, Long> {
 }

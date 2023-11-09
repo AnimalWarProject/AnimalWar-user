@@ -10,10 +10,10 @@ import lombok.*;
 @NoArgsConstructor
 @Table(name = "buildings")
 public class Building {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long buildingId;
     private String name;
+    @Enumerated(EnumType.STRING)
     private Grade grade;
     private Integer attackPower;
     private Integer defencePower;
@@ -22,4 +22,7 @@ public class Building {
     private Integer ironRate;
     private Integer foodRate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userUUID")
+    private User user;
 }

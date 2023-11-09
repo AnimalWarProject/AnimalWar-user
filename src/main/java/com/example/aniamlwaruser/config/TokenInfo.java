@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +18,6 @@ public class TokenInfo implements UserDetails {
     private UUID userUUID;
     private String id;
     private String nickName;
-    private String profileImage;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
