@@ -21,7 +21,7 @@ public class Building {
     private Integer ironRate;
     private Integer foodRate;
 
-//    @OneToMany(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "userUUID")
-//    private User user;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userUUID")
+    private User user;
 }

@@ -4,6 +4,7 @@ import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.entity.RefreshToken;
 import com.example.aniamlwaruser.domain.entity.User;
+import com.example.aniamlwaruser.domain.kafka.FirstTerrainProducer;
 import com.example.aniamlwaruser.domain.kafka.MatchProducer;
 import com.example.aniamlwaruser.domain.request.LoginRequest;
 import com.example.aniamlwaruser.domain.request.SignupRequest;
@@ -31,6 +32,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final MatchProducer matchProducer;
+    private final FirstTerrainProducer firstTerrainProducer;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
@@ -60,6 +62,8 @@ public class AuthService {
                 .species(user.getSpecies())
                 .build();
         matchProducer.send(build);
+
+        firstTerrainProducer.sendCreateTerrainRequest(user.getUserUUID());
     }
 
 
