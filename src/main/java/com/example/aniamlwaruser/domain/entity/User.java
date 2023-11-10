@@ -53,6 +53,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private LandForm landForm;
 
+    private int sea;
+    private int land;
+    private int mountain;
+
 
     public void exchangeGold(int amount) {
         this.food = food - 2000 * amount;
@@ -75,6 +79,18 @@ public class User {
 
     public void updateLandForm (LandForm newLandForm){
         this.landForm = newLandForm;
+    }
+
+    public void updateSea(int sea){
+        this.sea = sea;
+    }
+
+    public void updateMountain(int mountain){
+        this.mountain = mountain;
+    }
+
+    public void updateLand(int land){
+        this.land = land;
     }
 
     public void addFood ( int amount){

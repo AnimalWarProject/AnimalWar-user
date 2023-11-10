@@ -14,6 +14,6 @@ public class ResultTerrainConsumer {
 
     @KafkaListener(topics = "terrain-response-topic", groupId = "user-info-updater")
     public void updateUserInfo(TerrainResponseDto terrainResponseDto) {
-        userService.updateUserLandForm(terrainResponseDto);
+        userService.updateUserTerrainData(terrainResponseDto);
     }
 }

@@ -9,4 +9,7 @@ import java.util.UUID;
 public class TerrainResponseDto {
     private UUID userUUID;
     private LandForm landForm;
+    private int sea;
+    private int land;
+    private int mountain;
 }

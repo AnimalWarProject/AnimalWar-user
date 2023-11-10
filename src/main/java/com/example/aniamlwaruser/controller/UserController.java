@@ -65,6 +65,13 @@ public class UserController {
         userService.requestTerrain(userUUID);
         return ResponseEntity.ok("맵 생성 완료");
     }
+    
+//
+//    @PostMapping("/terrainResult")
+//    public ResponseEntity<String> updateUserLandForm(@RequestBody TerrainResponseDto terrainResponseDto) {
+//        userService.updateUserTerrainData(terrainResponseDto);
+//        return ResponseEntity.ok("맵 정보 변경 완료");
+//    }
 
     @PostMapping("/draw") // draw 서비스 돈 차감
     public void requestUser(@RequestBody DrawRequest request) {
