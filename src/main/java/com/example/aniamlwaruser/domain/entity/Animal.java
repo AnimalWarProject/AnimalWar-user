@@ -22,7 +22,8 @@ public class Animal {
     private Integer defencePower;
     private Integer life;
     private Species species;
+    private String imagePath;
 
-//    @OneToMany(mappedBy = "animal")
-//    private List<UserAnimal> userAnimals;
+    @OneToMany(mappedBy = "animal")
+    private List<UserAnimal> userAnimals;
 }
