@@ -7,7 +7,6 @@ import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.Animal;
 import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.entity.UserAnimal;
-import com.example.aniamlwaruser.domain.kafka.GenerateTerrainProducer;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
@@ -32,7 +31,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AnimalRepository animalRepository;
-    private final GenerateTerrainProducer generateTerrainProducer;
     private final AnimalINVTRepository animalINVTRepository;
     private final UpdateTerrainProducer updateTerrainProducer;
     private final UserAnimalRepository userAnimalRepository;

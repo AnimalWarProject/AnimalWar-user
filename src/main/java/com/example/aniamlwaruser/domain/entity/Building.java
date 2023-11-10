@@ -3,6 +3,8 @@ package com.example.aniamlwaruser.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Builder
 @Entity
@@ -20,9 +22,12 @@ public class Building {
     private Integer woodRate;
     private Integer ironRate;
     private Integer foodRate;
+    private String imagePath;
+
     private BuildingType buildingType;
+
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "userUUID")
-    private User user;
+    private List<UserBuilding> userBuildings;
 }

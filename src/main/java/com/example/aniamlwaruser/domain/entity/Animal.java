@@ -24,7 +24,8 @@ public class Animal {
     private Integer life;
     @Enumerated(EnumType.STRING)
     private Species species;
+    private String imagePath;
 
-//    @OneToMany(mappedBy = "animal")
-//    private List<UserAnimal> userAnimals;
+    @OneToMany(mappedBy = "animal")
+    private List<UserAnimal> userAnimals;
 }
