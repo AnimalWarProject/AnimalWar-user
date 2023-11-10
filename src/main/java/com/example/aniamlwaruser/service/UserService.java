@@ -75,11 +75,14 @@ public class UserService {
         userRepository.save(existingUser);
     }
 
-    public void updateUserLandForm(TerrainResponseDto terrainResponseDto) {
+    public void updateUserTerrainData(TerrainResponseDto terrainResponseDto) {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())
                 .orElseThrow(() -> new IllegalArgumentException("User not found UUID: " + terrainResponseDto.getUserUUID()));
 
         user.updateLandForm(terrainResponseDto.getLandForm());
+        user.updateSea(terrainResponseDto.getSea());
+        user.updateLand(terrainResponseDto.getLand());
+        user.updateMountain(terrainResponseDto.getMountain());
         userRepository.save(user);
     }
 

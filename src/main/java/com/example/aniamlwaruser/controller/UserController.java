@@ -5,7 +5,6 @@ import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -67,6 +66,13 @@ public class UserController {
         userService.requestTerrain(userUUID);
         return ResponseEntity.ok("맵 생성 완료");
     }
+    
+//
+//    @PostMapping("/terrainResult")
+//    public ResponseEntity<String> updateUserLandForm(@RequestBody TerrainResponseDto terrainResponseDto) {
+//        userService.updateUserTerrainData(terrainResponseDto);
+//        return ResponseEntity.ok("맵 정보 변경 완료");
+//    }
 
 //    @PostMapping("/draw") // draw 서비스
 //    public List<DrawResultResponseDto> requestUser(@RequestBody DrawRequest request) {
