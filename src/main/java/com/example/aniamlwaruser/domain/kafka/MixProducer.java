@@ -32,11 +32,11 @@ public class MixProducer {
 //    public void sendBuilding(List<Building> buildings) {
 //        CompletableFuture<SendResult<String, List<Building>>> send = buildingKafkaTemplate.send(TopicConfig.buildingMix, buildings);
 //    }
-
-
-    private final KafkaTemplate<String, MixRequest> mixRequestKafkaTemplate;
-    public void sendMixRequest(MixRequest mixRequest) {
-        CompletableFuture<SendResult<String, MixRequest>> send = mixRequestKafkaTemplate.send(TopicConfig.mixRequest, mixRequest);
-    }
+//
+//
+//    private final KafkaTemplate<String, MixRequest> mixRequestKafkaTemplate;
+//    public void sendMixRequest(MixRequest mixRequest) {
+//        CompletableFuture<SendResult<String, MixRequest>> send = mixRequestKafkaTemplate.send(TopicConfig.mixRequest, mixRequest);
+//    }
 
 }

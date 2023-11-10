@@ -17,6 +17,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+
     // 아이디로 회원 정보 조회
     public UserResponse findUserByUserId(String id) {
         User user = userRepository.findByid(id)

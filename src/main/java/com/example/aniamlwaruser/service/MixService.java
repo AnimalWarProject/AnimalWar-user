@@ -36,8 +36,6 @@ public class MixService {
 
 
 
-
-
 //    #4 유저 인벤토리에 넣기
 //    1. 믹스된걸 받은 것을 참고해서 도감에서 해당하는 걸 찾아
 //    2. 찾은걸 인벤토리에(UserAnimal) 넣어
@@ -68,13 +66,6 @@ public class MixService {
 
 //    #5 유저 인벤토리에서 믹스에 사용한 4개를 삭제
 //    public void deleteMixed(List<Long> selectedUserAnimalList) {
-//
 //        userAnimalRepository.deleteAllById(selectedUserAnimalList);
 //    }
-//
-
-
-
-
-
 }
