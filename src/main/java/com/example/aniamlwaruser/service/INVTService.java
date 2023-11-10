@@ -1,23 +1,36 @@
 package com.example.aniamlwaruser.service;
 
+import com.example.aniamlwaruser.domain.dto.SendResultUpgrade;
 import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.request.INVTRequest;
+import com.example.aniamlwaruser.domain.response.GetAllResponse;
 import com.example.aniamlwaruser.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class INVTService {
 
     private final UserRepository userRepository;
-
     private final AnimalRepository animalRepository;
     private final BuildingRepository buildingRepository;
-
     private final AnimalINVTRepository animalINVTRepository;
     private final BuildingINVTRepository buildingINVTRepository;
 
+
+    public List<GetAllResponse> getAnimals(UUID userUUID){
+        return animalINVTRepository.findByUserUUID(userUUID);
+    }
+
+    public List<GetAllResponse> getBuildings(UUID userUUID){
+        return buildingINVTRepository.findByUserUUID(userUUID);
+    }
 
     public void insertAnimal(INVTRequest invtRequest){
 
@@ -59,6 +72,19 @@ public class INVTService {
 
         buildingINVTRepository.save(build);
 
+    }
+
+    @Transactional
+    public void updateUpgrade(SendResultUpgrade result){
+        Optional<UserAnimal> qtyFindByInven = animalINVTRepository.findByInven(result.getUserUUID(), result.getAnimalId());
+        UserAnimal ua = qtyFindByInven.get();
+        if (ua.getOwnedQuantity() < 2){
+            animalINVTRepository.deleteFindByInven(result.getUserUUID(), result.getAnimalId()); // 남은 수량이 1개 미만이면 삭제
+        }else {
+            ua.setUpgrade(ua.getOwnedQuantity()-1);
+        }
+        INVTRequest invtRequest = new INVTRequest(result.getUserUUID(), result.getAnimalId(), 1, 0, result.getResultUpgrade()); // 강화된 동물을 저장한다.
+        animalINVTRepository.save(invtRequest.toEntity());
     }
 
 }

@@ -7,7 +7,6 @@ import com.example.aniamlwaruser.domain.request.SignupRequest;
 import com.example.aniamlwaruser.domain.response.LoginResponse;
 import com.example.aniamlwaruser.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +46,7 @@ public class AuthController {
         return tokenInfo;
     }
 
-    @PostMapping("/newAccessToken")
+    @PostMapping("/newAsccessToken")
     public ResponseEntity<?> newAccessToken(@RequestBody String refreshToken) {
         String newAccessToken = jwtService.generateNewAccessToken(refreshToken);
         return ResponseEntity.ok().body(newAccessToken);

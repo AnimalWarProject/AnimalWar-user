@@ -24,6 +24,9 @@ public class Building {
     private Integer foodRate;
     private String imagePath;
 
+    private BuildingType buildingType;
+
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "userUUID")
     private List<UserBuilding> userBuildings;

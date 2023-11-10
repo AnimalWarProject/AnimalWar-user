@@ -2,6 +2,7 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
+import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
@@ -9,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-
 import java.util.UUID;
 
 
@@ -74,9 +73,9 @@ public class UserController {
 //        return ResponseEntity.ok("맵 정보 변경 완료");
 //    }
 
-//    @PostMapping("/draw") // draw 서비스
-//    public List<DrawResultResponseDto> requestUser(@RequestBody DrawRequest request) {
-//        return userService.requestDraw(request);
-//    }
+    @PostMapping("/draw") // draw 서비스 돈 차감
+    public void requestUser(@RequestBody DrawRequest request) {
+        userService.requestDraw(request);
+    }
 
 }

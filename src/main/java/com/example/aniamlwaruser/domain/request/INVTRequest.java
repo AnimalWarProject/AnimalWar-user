@@ -1,5 +1,9 @@
 package com.example.aniamlwaruser.domain.request;
 
+import com.example.aniamlwaruser.domain.entity.Animal;
+import com.example.aniamlwaruser.domain.entity.User;
+import com.example.aniamlwaruser.domain.entity.UserAnimal;
+
 import java.util.UUID;
 
 public record INVTRequest(
@@ -14,4 +18,13 @@ public record INVTRequest(
         //강화 수치
         int upgrade
 ) {
+    public UserAnimal toEntity(){
+        return UserAnimal.builder()
+                .user(User.builder().userUUID(uuid).build())
+                .animal(Animal.builder().animalId(id).build())
+                .ownedQuantity(ownedQuantity)
+                .placedQuantity(placedQuantity)
+                .upgrade(upgrade)
+                .build();
+    }
 }

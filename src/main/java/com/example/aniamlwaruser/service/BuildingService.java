@@ -2,8 +2,11 @@ package com.example.aniamlwaruser.service;
 
 
 import com.example.aniamlwaruser.domain.entity.Building;
+import com.example.aniamlwaruser.domain.entity.BuildingType;
 import com.example.aniamlwaruser.domain.entity.Grade;
+import com.example.aniamlwaruser.repository.BuildingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,12 +17,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BuildingService {
     private final BuildingRepository buildingRepository;
-    public ResponseEntity<RestResult<Object>> saveBuildings() {
+
+    @Bean
+    public ResponseEntity<String> saveBuildings() {
         // buildingRepository 비어 있으면 저장
         if(!buildingRepository.findAll().isEmpty()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new RestResult<>("error",new RestError("DUPLICATE", "Data already exists")));
+                    .body("Data already exists");
         }
+
         buildingRepository.saveAll(List.of(
                                 Building.builder()
                                         .name("본부")
@@ -78,7 +84,7 @@ public class BuildingService {
                                         .woodRate(0)
                                         .ironRate(0)
                                         .foodRate(50)
-                                        .imagePath("NormalFoodTower.webp"")
+                                        .imagePath("NormalFoodTower.webp")
                                         .buildingType(BuildingType.FOODSTORAGE)
                                         .build(),
                                 Building.builder()
@@ -632,8 +638,9 @@ public class BuildingService {
                         .foodRate(0)
                         .imagePath("LegendFlower.webp")
                         .buildingType(BuildingType.FLOWER)
-                        .build();
+                        .build()
     ));
-        return  ResponseEntity.ok(new RestResult<>("success","Data saved successfully"));
-    }
-}
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body("Data saved successfully");
+}}

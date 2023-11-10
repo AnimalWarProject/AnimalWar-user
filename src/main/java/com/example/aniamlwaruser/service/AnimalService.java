@@ -19,12 +19,14 @@ public class AnimalService {
     private final AnimalRepository animalRepository;
 
     @Bean
-    public ResponseEntity<RestResult<Object>> saveAnimals() {
+    public ResponseEntity<String> saveAnimals() {
         // buildingRepository 비어 있으면 저장
-        if(!animalRepository.findAll().isEmpty()) {
+        if (!animalRepository.findAll().isEmpty()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new RestResult<>("error",new RestError("DUPLICATE", "Data already exists")));
+                    .body("Data already exists");
         }
+
+        // 데이터 저장 로직 추가 (이 부분은 생략된 것으로 가정)
 
         // animalRepository가 비어 있을 때만 저장
         if (animalRepository.findAll().isEmpty()) {
@@ -730,10 +732,10 @@ public class AnimalService {
                     Animal.builder().name("만티코어").grade(Grade.UNIQUE).attackPower(133).defencePower(133).life(333).species(Species.COMMON).imagePath("Manticore.webp").build(),
                     Animal.builder().name("네시").grade(Grade.LEGEND).attackPower(187).defencePower(177).life(450).species(Species.COMMON).imagePath("Nessie.webp").build(),
                     Animal.builder().name("바실리스크").grade(Grade.LEGEND).attackPower(195).defencePower(167).life(460).species(Species.COMMON).imagePath("Basilisk.webp").build(),
-                    Animal.builder().name("나이트메어").grade(Grade.LEGEND).attackPower(165).defencePower(190).life(480).species(Species.COMMON).imagePath("Nightmare.webp").build();
+                    Animal.builder().name("나이트메어").grade(Grade.LEGEND).attackPower(165).defencePower(190).life(480).species(Species.COMMON).imagePath("Nightmare.webp").build()
 
         ));
         }
-        return  ResponseEntity.ok(new RestResult<>("success","Data saved successfully"));
-    }
-}
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("Data saved successfully");
+    }}

@@ -24,7 +24,7 @@ public class SecurityConfig {
     public SecurityFilterChain
         securityFilterChain(HttpSecurity security) throws Exception {
         security.csrf(AbstractHttpConfigurer::disable);
-        security.sessionManagement(
+        security.sessionManagement( 
                 configurer -> configurer
                         .sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS));
