@@ -159,13 +159,13 @@ public class UserService {
     }
 
 
-    @Transactional
-    public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
-        // saveInventory 실행
-        saveInventory(mixRequest);
-        // deleteMixed 실행
-        deleteMixed(mixRequest.getUserAnimalList());
-    }
+//    @Transactional
+//    public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
+//        // saveInventory 실행
+//        saveInventory(mixRequest);
+//        // deleteMixed 실행
+//        deleteMixed(mixRequest.getUserAnimalList());
+//    }
 
     public void saveInventory(MixRequest mixRequest) {
         User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
@@ -191,10 +191,10 @@ public class UserService {
         userAnimalRepository.save(userAnimal);
     }
 
-    public void deleteMixed(List<Long> selectedUserAnimalIds) {
-        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
-            // Batch delete by IDs to improve performance
-            userAnimalRepository.deleteAllByUserAnimalIdIn(selectedUserAnimalIds);
-        }
-    }
+//    public void deleteMixed(List<Long> selectedUserAnimalIds) {
+//        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
+//            // Batch delete by IDs to improve performance
+//            userAnimalRepository.deleteAllByUserAnimalIdIn(selectedUserAnimalIds);
+//        }
+//    }
 }

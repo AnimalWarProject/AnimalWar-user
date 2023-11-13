@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public interface AnimalINVTRepository extends JpaRepository<UserAnimal,Long> {
 
-    Optional<UserAnimal> findByUserAndAnimal(User byUserUUID, Animal animal);
+    Optional<UserAnimal> findByUserAndAnimal(User userUUID, Animal animalId);
 
     //    @Query("SELECT ua.upgrade FROM UserAnimal ua INNER JOIN User u ON u.id =:byUserUUID INNER JOIN Animal a ON a.animalId = :animal")
 //    Optional<UserAnimal> findByInven(UUID byUserUUID, Long animal);

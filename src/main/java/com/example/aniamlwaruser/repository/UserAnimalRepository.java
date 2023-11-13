@@ -11,7 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserAnimalRepository extends JpaRepository<UserAnimal, Long> {
-    void deleteAllByUserAnimalIdIn(List<Long> userAnimalIds);
+
+//    void deleteAllByUserAnimalIdIn(List<Long> id);
 
     Optional<UserAnimal> findByUserAndAnimal(User user, Animal animal);
 }

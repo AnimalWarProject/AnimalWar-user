@@ -16,6 +16,7 @@ public class Animal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long animalId;
+
     private String name;
     @Enumerated(EnumType.STRING)
     private Grade grade;
@@ -26,6 +27,6 @@ public class Animal {
     private Species species;
     private String imagePath;
 
-    @OneToMany(mappedBy = "animal")
-    private List<UserAnimal> userAnimals;
+//    @OneToMany(mappedBy = "animal")
+//    private List<UserAnimal> userAnimals;
 }

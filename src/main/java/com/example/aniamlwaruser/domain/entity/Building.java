@@ -27,7 +27,7 @@ public class Building {
     private BuildingType buildingType;
 
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userUUID")
-    private List<UserBuilding> userBuildings;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userUUID")
+//    private List<UserBuilding> userBuildings;
 }
