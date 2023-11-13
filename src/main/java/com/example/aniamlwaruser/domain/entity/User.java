@@ -58,11 +58,11 @@ public class User {
     private int mountain;
 
 
-    public void exchangeGold(int amount) {
-        this.food = food - 2000 * amount;
-        this.wood = wood - 2000 * amount;
-        this.iron = iron - 2000 * amount;
-        this.gold = gold + 1000 * amount;
+    public void exchangeGold() {
+        this.food = food - 2000 ;
+        this.wood = wood - 2000 ;
+        this.iron = iron - 2000 ;
+        this.gold = gold + 1000 ;
     }
 
     public void minusGold ( int amount){
