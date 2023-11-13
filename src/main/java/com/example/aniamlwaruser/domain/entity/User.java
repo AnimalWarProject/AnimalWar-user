@@ -33,6 +33,10 @@ public class User {
     private int life;
     private int battlePoint;
 
+    private int totalFoodRate;
+    private int totalWoodRate;
+    private int totalIronRate;
+
     private String attackTypeSkill;
     private String defenseTypeSkill;
     private String utilityTypeSkill;
@@ -125,4 +129,24 @@ public class User {
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
+
+
+    public void calculateTotalRates() {
+        // 모든 건물의 rate를 0으로 초기화합니다.
+        this.totalFoodRate = 0;
+        this.totalWoodRate = 0;
+        this.totalIronRate = 0;
+
+        // buildingInventory 리스트를 순회하며 rate를 계산합니다.
+        for (UserBuilding userBuilding : this.buildingInventory) {
+            if (userBuilding.getPlacedQuantity() > 0) { // 건물이 배치된 경우에만
+                Building building = userBuilding.getBuilding();
+                // 각 rate를 placedQuantity에 따라 추가합니다.
+                this.totalFoodRate += building.getFoodRate() * userBuilding.getPlacedQuantity();
+                this.totalWoodRate += building.getWoodRate() * userBuilding.getPlacedQuantity();
+                this.totalIronRate += building.getIronRate() * userBuilding.getPlacedQuantity();
+            }
+        }
+    }
 }
+
