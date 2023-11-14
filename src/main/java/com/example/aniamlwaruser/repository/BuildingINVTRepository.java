@@ -1,7 +1,9 @@
 package com.example.aniamlwaruser.repository;
 
+
 import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +18,6 @@ public interface BuildingINVTRepository extends JpaRepository<UserBuilding,Long>
 
     Optional<UserBuilding> findByUserAndBuilding(User userUUID, Building buildingId);
 
+    @Query("SELECT ub FROM UserBuilding ub WHERE ub.user.userUUID=:userUUID AND ub.building.grade=:grade")
+    List<UserBuilding> findAllByGrade(UUID userUUID, Grade grade);
 }
