@@ -174,7 +174,6 @@ public class UserService {
                         newUserBuilding.setBuilding(building);
                         newUserBuilding.setOwnedQuantity(0);
                         newUserBuilding.setPlacedQuantity(0);
-                        newUserBuilding.setUpgrade(0);
                         return newUserBuilding;
                     });
 

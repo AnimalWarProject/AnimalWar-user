@@ -1,5 +1,7 @@
 package com.example.aniamlwaruser.domain.response;
 
+import com.example.aniamlwaruser.domain.entity.Animal;
+import com.example.aniamlwaruser.domain.entity.Building;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,10 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class BuildingsResponse {
 
-    private String name;
-    private Integer ownedQuantity;
-    private Integer upgrade;
-    private Long animalId;
-//    private String image; todo : 이미지 파일
-
+    private Long id;
+    private Building building;
+    private int ownedQuantity;
+    private int placedQuantity;
 }

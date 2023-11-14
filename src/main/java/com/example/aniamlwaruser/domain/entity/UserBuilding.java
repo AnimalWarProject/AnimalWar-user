@@ -23,8 +23,6 @@ public class UserBuilding {
     @ManyToOne
     @JoinColumn(name="buildingId")
     private Building building;
-
     private int ownedQuantity;
     private int placedQuantity;
-    private int upgrade;
 }
