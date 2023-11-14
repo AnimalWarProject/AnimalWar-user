@@ -4,6 +4,7 @@ import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
+import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -58,20 +59,13 @@ public class UserController {
 
 
     @PostMapping("/terrain")
-    public ResponseEntity<String> requestTerrain(@RequestHeader String accessToken) {
-        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+    public ReTerrainResponse requestTerrain(@AuthenticationPrincipal TokenInfo tokenInfo) {
+//        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
 
-        userService.requestTerrain(userUUID);
-        return ResponseEntity.ok("맵 생성 완료");
+        return userService.requestTerrain(userUUID);
     }
     
-//
-//    @PostMapping("/terrainResult")
-//    public ResponseEntity<String> updateUserLandForm(@RequestBody TerrainResponseDto terrainResponseDto) {
-//        userService.updateUserTerrainData(terrainResponseDto);
-//        return ResponseEntity.ok("맵 정보 변경 완료");
-//    }
 
     @PostMapping("/draw") // draw 서비스 돈 차감
     public void requestUser(@RequestBody DrawRequest request) {

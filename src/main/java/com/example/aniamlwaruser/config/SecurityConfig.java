@@ -37,6 +37,7 @@ public class SecurityConfig {
                 req.requestMatchers(
                        AntPathRequestMatcher.antMatcher("/api/v1/auth/**")
                        ,AntPathRequestMatcher.antMatcher("/api/v1/user/**")
+                        ,AntPathRequestMatcher.antMatcher("/api/v1/user/terrain")
                        ,AntPathRequestMatcher.antMatcher("/api/v1/rank/**")
                        ,AntPathRequestMatcher.antMatcher("/api/v1/exchange/**")
                 )

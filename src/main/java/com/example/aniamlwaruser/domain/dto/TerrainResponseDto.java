@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TerrainResponseDto {
     private UUID userUUID;
-    private LandForm landForm;
+    private LandForm dominantlandForm;
     private int sea;
     private int land;
     private int mountain;

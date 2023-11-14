@@ -10,6 +10,7 @@ import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.entity.UserAnimal;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
+import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.AnimalINVTRepository;
 import com.example.aniamlwaruser.repository.AnimalRepository;
@@ -85,14 +86,14 @@ public class UserService {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())
                 .orElseThrow(() -> new IllegalArgumentException("User not found UUID: " + terrainResponseDto.getUserUUID()));
 
-        user.updateLandForm(terrainResponseDto.getLandForm());
+        user.updateLandForm(terrainResponseDto.getDominantlandForm());
         user.updateSea(terrainResponseDto.getSea());
         user.updateLand(terrainResponseDto.getLand());
         user.updateMountain(terrainResponseDto.getMountain());
         userRepository.save(user);
     }
 
-    public void requestTerrain(UUID userUUID) {
+    public ReTerrainResponse requestTerrain(UUID userUUID) {
         int requiredGold = 5000;
         User user = userRepository.findByUserUUID(userUUID)
                 .orElseThrow(() -> new RuntimeException("user Not found"));
@@ -111,6 +112,7 @@ public class UserService {
         // 맵 생성 요청을 Kafka 토픽으로 전송합니다.
         TerrainRequestDto terrainRequestDto = new TerrainRequestDto(user.getUserUUID());
         updateTerrainProducer.updateTerrain(terrainRequestDto);
+        return new ReTerrainResponse(user.getGold(), user.getSea(), user.getLand(), user.getMountain());
     }
 
     public void requestDraw(DrawRequest request){
