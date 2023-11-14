@@ -1,27 +1,22 @@
 package com.example.aniamlwaruser.service;
 
 
-import com.example.aniamlwaruser.domain.dto.SendDrawResponse;
+import com.example.aniamlwaruser.domain.dto.DrawResponse;
 import com.example.aniamlwaruser.domain.dto.MixRequest;
 import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
-import com.example.aniamlwaruser.domain.entity.Animal;
-import com.example.aniamlwaruser.domain.entity.User;
-import com.example.aniamlwaruser.domain.entity.UserAnimal;
+import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
-import com.example.aniamlwaruser.repository.AnimalINVTRepository;
-import com.example.aniamlwaruser.repository.AnimalRepository;
+import com.example.aniamlwaruser.repository.*;
 import com.example.aniamlwaruser.domain.kafka.UpdateTerrainProducer;
-import com.example.aniamlwaruser.repository.UserAnimalRepository;
-import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,9 +28,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AnimalRepository animalRepository;
+    private final BuildingRepository buildingRepository;
     private final AnimalINVTRepository animalINVTRepository;
+    private final BuildingINVTRepository buildingINVTRepository;
     private final UpdateTerrainProducer updateTerrainProducer;
     private final UserAnimalRepository userAnimalRepository;
+    private final UserBuildingRepository userBuildingRepository;
 
 
     // 아이디로 회원 정보 조회
@@ -125,9 +123,9 @@ public class UserService {
         }
     }
 
-    public void insertDrawResponse(List<SendDrawResponse> result) {
+    public void insertAnimalDrawResponse(List<DrawResponse> result) { // 동물 뽑기 결과 저장
         Map<String, Long> animalCountMap = result.stream()
-                .collect(Collectors.groupingBy(SendDrawResponse::getName, Collectors.counting()));
+                .collect(Collectors.groupingBy(DrawResponse::getName, Collectors.counting()));
 
         User byUserUUID = userRepository.findByUserUUID(result.get(0).getUserUUID())
                 .orElseThrow(() -> new RuntimeException("Not Found User"));
@@ -152,6 +150,36 @@ public class UserService {
 
             userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + count.intValue());
             animalINVTRepository.save(userAnimal);
+        }
+    }
+
+    public void insertBuildingDrawResponse(List<DrawResponse> result) { // 건물 뽑기 결과 저장
+        Map<String, Long> buildingCountMap = result.stream()
+                .collect(Collectors.groupingBy(DrawResponse::getName, Collectors.counting()));
+
+        User byUserUUID = userRepository.findByUserUUID(result.get(0).getUserUUID())
+                .orElseThrow(() -> new RuntimeException("Not Found User"));
+
+        for (Map.Entry<String, Long> entry : buildingCountMap.entrySet()) {
+            String buildingName = entry.getKey();
+            Long count = entry.getValue();
+
+            Building building = buildingRepository.findByName(buildingName)
+                    .orElseThrow(() -> new IllegalArgumentException("Animal not found with name: " + buildingName));
+
+            UserBuilding userBuilding = buildingINVTRepository.findByUserAndBuilding(byUserUUID, building)
+                    .orElseGet(() -> {
+                        UserBuilding newUserBuilding = new UserBuilding();
+                        newUserBuilding.setUser(byUserUUID);
+                        newUserBuilding.setBuilding(building);
+                        newUserBuilding.setOwnedQuantity(0);
+                        newUserBuilding.setPlacedQuantity(0);
+                        newUserBuilding.setUpgrade(0);
+                        return newUserBuilding;
+                    });
+
+            userBuilding.setOwnedQuantity(userBuilding.getOwnedQuantity() + count.intValue());
+            buildingINVTRepository.save(userBuilding);
         }
     }
 
