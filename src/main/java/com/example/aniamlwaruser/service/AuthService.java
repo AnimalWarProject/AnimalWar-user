@@ -73,7 +73,6 @@ public class AuthService {
                     .building(building)
                     .ownedQuantity(1)
                     .placedQuantity(0)
-                    .upgrade(0)
                     .build();
             userBuildingRepository.save(userBuilding);
         }

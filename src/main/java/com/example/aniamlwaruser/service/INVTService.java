@@ -37,7 +37,13 @@ public class INVTService {
     }
 
     public List<BuildingsResponse> getBuildings(UUID userUUID){
-        return buildingINVTRepository.findByUserUUID(userUUID);
+        List<UserBuilding> byUserUUID = buildingINVTRepository.findByUserUUID(userUUID);
+        return byUserUUID.stream().map((e) -> new BuildingsResponse(
+                e.getId(),
+                e.getBuilding(),
+                e.getOwnedQuantity(),
+                e.getPlacedQuantity()
+        )).toList();
     }
 
     public void insertAnimal(INVTRequest invtRequest){
@@ -74,7 +80,6 @@ public class INVTService {
                 .building(building)
                 .ownedQuantity(invtRequest.ownedQuantity())
                 .placedQuantity(invtRequest.placedQuantity())
-                .upgrade(invtRequest.upgrade())
                 .build();
 
 
