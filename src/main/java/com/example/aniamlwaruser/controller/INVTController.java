@@ -20,15 +20,15 @@ public class INVTController {
     private final JwtService jwtService;
 
     @GetMapping("/animals") // 동물 인벤토리 불러오기
-    public List<GetAllResponse> getAnimals(@RequestHeader("Authorization") String token){
-        TokenInfo tokenInfo = jwtService.parseAccessToken(token.replace("Bearer ", ""));
+    public List<GetAllResponse> getAnimals(@RequestHeader("Authorization") String accessToken){
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
         return INVTService.getAnimals(userUUID);
     }
 
     @GetMapping("/buildings") // 건물 인벤토리 불러오기
-    public List<GetAllResponse> getBuildings(@RequestHeader("Authorization") String token){
-        TokenInfo tokenInfo = jwtService.parseAccessToken(token.replace("Bearer ", ""));
+    public List<GetAllResponse> getBuildings(@RequestHeader("Authorization") String accessToken){
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
         return INVTService.getBuildings(userUUID);
     }
