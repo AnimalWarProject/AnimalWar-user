@@ -3,10 +3,12 @@ package com.example.aniamlwaruser.service;
 
 import com.example.aniamlwaruser.domain.dto.DrawResponse;
 import com.example.aniamlwaruser.domain.dto.MixRequest;
+import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
+import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.*;
 import com.example.aniamlwaruser.domain.kafka.UpdateTerrainProducer;
@@ -82,27 +84,33 @@ public class UserService {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())
                 .orElseThrow(() -> new IllegalArgumentException("User not found UUID: " + terrainResponseDto.getUserUUID()));
 
-        user.updateLandForm(terrainResponseDto.getLandForm());
+        user.updateLandForm(terrainResponseDto.getDominantlandForm());
         user.updateSea(terrainResponseDto.getSea());
         user.updateLand(terrainResponseDto.getLand());
         user.updateMountain(terrainResponseDto.getMountain());
         userRepository.save(user);
     }
 
-    public void requestTerrain(UUID userUUID) {
+    public ReTerrainResponse requestTerrain(UUID userUUID) {
         int requiredGold = 5000;
         User user = userRepository.findByUserUUID(userUUID)
                 .orElseThrow(() -> new RuntimeException("user Not found"));
 
+        // 무료 지형이 남아있는지 또는 충분한 골드가 있는지 확인합니다.
         if (user.getFreeTerrainNum() > 0) {
-            user.minusFreeTerrainNum();
+            user.minusFreeTerrainNum(); // 무료 지형 번호를 하나 줄입니다.
         } else {
             if (user.getGold() < requiredGold) {
-                throw new RuntimeException("Not enough gold");
+                throw new RuntimeException("Not enough gold"); // 예외를 던집니다.
             }
-            user.minusGold(requiredGold);
+            user.minusGold(requiredGold); // 필요한 골드를 차감합니다.
         }
-        updateTerrainProducer.updateTerrain(userUUID);
+        userRepository.save(user); // 변경 사항을 저장합니다.
+
+        // 맵 생성 요청을 Kafka 토픽으로 전송합니다.
+        TerrainRequestDto terrainRequestDto = new TerrainRequestDto(user.getUserUUID());
+        updateTerrainProducer.updateTerrain(terrainRequestDto);
+        return new ReTerrainResponse(user.getGold(), user.getSea(), user.getLand(), user.getMountain());
     }
 
     public void requestDraw(DrawRequest request){

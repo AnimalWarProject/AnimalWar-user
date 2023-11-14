@@ -34,6 +34,11 @@ public class UserResponse {
 
     private LandForm landForm;
 
+    private int sea;
+    private int land;
+    private int mountain;
+
+
     public static UserResponse userResponseBuild(User user) {
         return UserResponse.builder()
                 .id(user.getId())
@@ -42,6 +47,9 @@ public class UserResponse {
                 .iron(user.getIron())
                 .wood(user.getWood())
                 .gold(user.getGold())
+                .sea(user.getSea())
+                .land(user.getLand())
+                .mountain(user.getMountain())
                 .attackPower(user.getAttackPower())
                 .defensePower(user.getDefensePower())
                 .life(user.getLife())

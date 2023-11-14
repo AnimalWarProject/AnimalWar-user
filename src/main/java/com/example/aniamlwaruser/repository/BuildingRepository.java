@@ -11,3 +11,4 @@ public interface BuildingRepository extends JpaRepository<Building,Long> {
     Optional<Building> findByName(String buildingName);
 
 }
+

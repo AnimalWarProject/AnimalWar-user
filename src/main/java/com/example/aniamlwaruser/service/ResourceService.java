@@ -1,5 +1,6 @@
 package com.example.aniamlwaruser.service;
 
+import com.example.aniamlwaruser.domain.entity.LandForm;
 import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.entity.UserBuilding;
 import com.example.aniamlwaruser.repository.UserRepository;
@@ -13,48 +14,27 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ResourceService {
-
     private final UserRepository userRepository;
 
-    // 매시간 유저 자원 반영
+    // 매시간 유저 자원을 반영하는 스케줄링된 작업
     @Scheduled(cron = "0 0 * * * ?")
     @Async
     public void updateResourceHourly() {
         List<User> allUsers = userRepository.findAll();
 
         for (User user : allUsers) {
-            int totalFoodRate = 0;
-            int totalIronRate = 0;
-            int totalWoodRate = 0;
+            user.calculateTotalRates(); // 총 rate를 계산하는 메소드 호출
 
-            List<UserBuilding> userBuildings = user.getBuildingInventory();
-            for (UserBuilding userBuilding : userBuildings) {
-                if (userBuilding.getPlacedQuantity() > 0) {
-                    totalFoodRate += userBuilding.getBuilding().getFoodRate() * userBuilding.getPlacedQuantity();
-                    totalIronRate += userBuilding.getBuilding().getIronRate() * userBuilding.getPlacedQuantity();
-                    totalWoodRate += userBuilding.getBuilding().getWoodRate() * userBuilding.getPlacedQuantity();
-                }
-            }
-            switch (user.getLandForm()) {
-                case MOUNTAIN -> {
-                    totalWoodRate *= 1.3;
-                    totalFoodRate *= 0.7;
-                }
-                case SEA -> {
-                    totalIronRate *= 1.3;
-                    totalWoodRate *= 0.7;
-                }
-                case LAND -> {
-                    totalFoodRate *= 1.3;
-                    totalIronRate *= 0.7;
-                }
-            }
+            // LandForm에 따라 rate 조정
+            int foodRateAdjustment = user.getLandForm() == LandForm.LAND ? (int)(user.getTotalFoodRate() * 0.3) : 0;
+            int ironRateAdjustment = user.getLandForm() == LandForm.SEA ? (int)(user.getTotalIronRate() * 0.3) : 0;
+            int woodRateAdjustment = user.getLandForm() == LandForm.MOUNTAIN ? (int)(user.getTotalWoodRate() * 0.3) : 0;
 
-            user.addFood(totalFoodRate);
-            user.addIron(totalIronRate);
-            user.addWood(totalWoodRate);
+            // 조정된 rate를 기반으로 자원을 추가
+            user.addFood(user.getTotalFoodRate() + foodRateAdjustment);
+            user.addIron(user.getTotalIronRate() + ironRateAdjustment);
+            user.addWood(user.getTotalWoodRate() + woodRateAdjustment);
         }
-        userRepository.saveAll(allUsers);
+        userRepository.saveAll(allUsers); // 변경된 사용자 정보 저장
     }
 }
-
