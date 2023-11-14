@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface BuildingINVTRepository extends JpaRepository<UserBuilding,Long> {
 
     @Query("SELECT b FROM UserBuilding b WHERE b.user.userUUID=:userUUID")
-    List<UserBuilding> findByUserUUID(UUID userUUID);
+    List<UserBuilding> findUserBuildingByUserUUID(UUID userUUID);
 
     Optional<UserBuilding> findByUserAndBuilding(User userUUID, Building buildingId);
 
