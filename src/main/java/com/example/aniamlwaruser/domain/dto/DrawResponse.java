@@ -7,11 +7,11 @@ import lombok.Getter;
 import java.util.UUID;
 @Getter
 @AllArgsConstructor
-public class SendDrawResponse {
+public class DrawResponse {
     private String name;
     private UUID userUUID;
 
-    public SendDrawResponse() {
+    public DrawResponse() {
         // 기본 생성자
     }
 }
