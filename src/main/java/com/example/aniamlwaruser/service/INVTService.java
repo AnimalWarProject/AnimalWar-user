@@ -3,7 +3,8 @@ package com.example.aniamlwaruser.service;
 import com.example.aniamlwaruser.domain.dto.SendResultUpgrade;
 import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.request.INVTRequest;
-import com.example.aniamlwaruser.domain.response.GetAllResponse;
+import com.example.aniamlwaruser.domain.response.AnimalsResponse;
+import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import com.example.aniamlwaruser.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,18 @@ public class INVTService {
     private final BuildingINVTRepository buildingINVTRepository;
 
 
-    public List<GetAllResponse> getAnimals(UUID userUUID){
-        return animalINVTRepository.findByUserUUID(userUUID);
+    public List<AnimalsResponse> getAnimals(UUID userUUID){
+        List<UserAnimal> byUserUUID = animalINVTRepository.findByUserUUID(userUUID);
+        return byUserUUID.stream().map((e) -> new AnimalsResponse(
+                e.getId(),
+                e.getAnimal(),
+                e.getOwnedQuantity(),
+                e.getPlacedQuantity(),
+                e.getUpgrade()
+        )).toList();
     }
 
-    public List<GetAllResponse> getBuildings(UUID userUUID){
+    public List<BuildingsResponse> getBuildings(UUID userUUID){
         return buildingINVTRepository.findByUserUUID(userUUID);
     }
 
