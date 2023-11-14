@@ -26,7 +26,7 @@ public class INVTService {
 
 
     public List<AnimalsResponse> getAnimals(UUID userUUID){
-        List<UserAnimal> byUserUUID = animalINVTRepository.findByUserUUID(userUUID);
+        List<UserAnimal> byUserUUID = animalINVTRepository.findUserAnimalByUserUUID(userUUID);
         return byUserUUID.stream().map((e) -> new AnimalsResponse(
                 e.getId(),
                 e.getAnimal(),
@@ -37,7 +37,7 @@ public class INVTService {
     }
 
     public List<BuildingsResponse> getBuildings(UUID userUUID){
-        List<UserBuilding> byUserUUID = buildingINVTRepository.findByUserUUID(userUUID);
+        List<UserBuilding> byUserUUID = buildingINVTRepository.findUserBuildingByUserUUID(userUUID);
         return byUserUUID.stream().map((e) -> new BuildingsResponse(
                 e.getId(),
                 e.getBuilding(),
