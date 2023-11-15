@@ -1,6 +1,7 @@
 package com.example.aniamlwaruser.domain.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Type;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Setter
 public class User {
     @Id
+    @Column(columnDefinition = "BINARY(16)")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userUUID;
     private String id;
@@ -43,6 +45,8 @@ public class User {
 
     private String profileImage;
 
+
+    @JsonIgnoreProperties("user")
     @OneToMany(mappedBy = "user")
     private List<UserAnimal> animalInventory;
 

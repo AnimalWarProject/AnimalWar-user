@@ -1,5 +1,6 @@
 package com.example.aniamlwaruser.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 

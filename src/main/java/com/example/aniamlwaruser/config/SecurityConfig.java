@@ -43,6 +43,7 @@ public class SecurityConfig {
                                 ,AntPathRequestMatcher.antMatcher("/api/v1/inventory/**")
                                 ,AntPathRequestMatcher.antMatcher("/api/v1/inventory/animals")
                                 ,AntPathRequestMatcher.antMatcher("/api/v1/inventory/buildings")
+                                ,AntPathRequestMatcher.antMatcher("/api/v1/inventory/grade")
                 )
                         .permitAll()
                         .anyRequest().authenticated()

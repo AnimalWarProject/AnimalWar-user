@@ -100,4 +100,10 @@ public class INVTService {
         animalINVTRepository.save(invtRequest.toEntity());
     }
 
+    public List<UserAnimal> findAllByGrade(UUID userUUID, Grade grade) {
+        System.out.println("------------------------------------------- " + userUUID);
+        List<UserAnimal> allByGrade = animalINVTRepository.findAllByGrade(userUUID, grade);
+        return allByGrade;
+    }
+
 }

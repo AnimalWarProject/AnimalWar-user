@@ -1,14 +1,15 @@
 package com.example.aniamlwaruser.service;
 
 
-import com.example.aniamlwaruser.domain.entity.Animal;
-import com.example.aniamlwaruser.domain.entity.Grade;
-import com.example.aniamlwaruser.domain.entity.Species;
+import com.example.aniamlwaruser.domain.entity.*;
+import com.example.aniamlwaruser.repository.AnimalINVTRepository;
 import com.example.aniamlwaruser.repository.AnimalRepository;
+import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnimalService {
     private final AnimalRepository animalRepository;
-
+    private final AnimalINVTRepository animalINVTRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     @Bean
     public ResponseEntity<String> saveAnimals() {
         // buildingRepository 비어 있으면 저장
@@ -736,6 +739,34 @@ public class AnimalService {
 
         ));
         }
+
+        User user = User.builder().id("111").password(passwordEncoder.encode("111")).build();
+        userRepository.save(user);
+
+        Animal animal = animalRepository.findById(1L).get();
+        Animal animal2 = animalRepository.findById(13L).get();
+        Animal animal3 = animalRepository.findById(22L).get();
+        Animal animal4 = animalRepository.findById(234L).get();
+        Animal animal5 = animalRepository.findById(100L).get();
+
+
+        if (animalINVTRepository.findAll().isEmpty()) {
+            animalINVTRepository.saveAll(List.of(
+                    UserAnimal.builder()
+                            .user(user).animal(animal).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder()
+                            .user(user).animal(animal2).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder()
+                            .user(user).animal(animal3).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder()
+                            .user(user).animal(animal4).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder()
+                            .user(user).animal(animal5).ownedQuantity(1).placedQuantity(1).upgrade(1).build()
+
+            ));
+        }
+
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body("Data saved successfully");
     }}
