@@ -2,11 +2,13 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
+import com.example.aniamlwaruser.domain.request.DeleteInvenRequest;
 import com.example.aniamlwaruser.domain.request.INVTRequest;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import com.example.aniamlwaruser.service.INVTService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,13 +38,21 @@ public class INVTController {
     }
 
     @PostMapping("/animals")
-    public void insertAnimals(INVTRequest invtRequest){
+    public void insertAnimals(@RequestBody INVTRequest invtRequest){
         INVTService.insertAnimal(invtRequest);
     }
 
     @PostMapping("/buildings")
-    public void insertBuildings(INVTRequest invtRequest){
-        INVTService.insertAnimal(invtRequest);
+    public void insertBuildings(@RequestBody INVTRequest invtRequest){
+        INVTService.insertBuilding(invtRequest);
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<Boolean> deleteInvenItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteInvenRequest request){
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        boolean deleted = INVTService.deleteInvenItem(userUUID, request);
+        return ResponseEntity.ok(deleted);
     }
 
 }

@@ -10,10 +10,9 @@ public class TopicConfig {
     //    public final static String customerTopic = "customer";
     public final static String matchTopic = "match";
     public final static String mixResult = "mix";
-
     public final static String firstTerrain = "first-terrain-request-topic";
-
     public final static String updateTerrain = "user-terrain-request-topic";
+    public final static String insertMarket = "market";
 
     @Bean
     public NewTopic ownerTopic(){

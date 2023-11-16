@@ -2,7 +2,10 @@ package com.example.aniamlwaruser.service;
 
 import com.example.aniamlwaruser.domain.dto.SendResultUpgrade;
 import com.example.aniamlwaruser.domain.entity.*;
+import com.example.aniamlwaruser.domain.kafka.MarketInsertProducer;
+import com.example.aniamlwaruser.domain.request.DeleteInvenRequest;
 import com.example.aniamlwaruser.domain.request.INVTRequest;
+import com.example.aniamlwaruser.domain.request.MarketInsertRequest;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import com.example.aniamlwaruser.repository.*;
@@ -17,6 +20,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class INVTService {
+
+    private final MarketInsertProducer marketInsertProducer;
 
     private final UserRepository userRepository;
     private final AnimalRepository animalRepository;
@@ -84,6 +89,44 @@ public class INVTService {
 
 
         buildingINVTRepository.save(build);
+
+    }
+
+    @Transactional
+    public Boolean deleteInvenItem(UUID userUUID, DeleteInvenRequest request){
+        Optional<UserAnimal> byUserAndAnimalId = animalINVTRepository.findByUserAndAnimalId(userUUID, request.itemId());
+        Optional<UserBuilding> byUserAndBuildingId = buildingINVTRepository.findByUserAndBuildingId(userUUID, request.itemId());
+
+        if (byUserAndAnimalId.isPresent()){
+            if (byUserAndAnimalId.get().getOwnedQuantity() < 2){ // 만약 1개이하라면 삭제
+                UserAnimal userAnimal = byUserAndAnimalId.get();
+                animalINVTRepository.delete(userAnimal);
+            }else {
+                UserAnimal userAnimal = byUserAndAnimalId.get(); // 2개이상이면 수량 -1
+                userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity()-1);
+            }
+        } else if (byUserAndBuildingId.isPresent()) {
+            if (byUserAndBuildingId.get().getOwnedQuantity() < 2){
+                UserBuilding userBuilding = byUserAndBuildingId.get();
+                buildingINVTRepository.delete(userBuilding);
+            }else {
+                UserBuilding userBuilding = byUserAndBuildingId.get();
+                userBuilding.setOwnedQuantity(userBuilding.getOwnedQuantity()-1);
+            }
+        }else{
+            System.out.println("잘못된 정보입니다.");
+        }
+        MarketInsertRequest marketInsertRequest = new MarketInsertRequest(
+                userUUID,
+                request.itemId(),
+                request.name(),
+                request.grade(),
+                request.species(),
+                request.buff(),
+                request.price());
+
+        marketInsertProducer.send(marketInsertRequest);
+        return true;
 
     }
 
