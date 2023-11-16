@@ -6,6 +6,8 @@ import com.example.aniamlwaruser.domain.dto.MixRequest;
 import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.*;
+import com.example.aniamlwaruser.domain.request.AttackerSkillChangeRequest;
+import com.example.aniamlwaruser.domain.request.DefenderSkillChangeRequest;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
@@ -16,9 +18,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -232,4 +236,32 @@ public class UserService {
 //            userAnimalRepository.deleteAllByUserAnimalIdIn(selectedUserAnimalIds);
 //        }
 //    }
+
+    @Transactional
+    public void changeAttackerSkill(AttackerSkillChangeRequest request, UUID userId) {
+        Optional<User> optionalUser = userRepository.findByUserUUID(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setAttackerAttackTypeSkill(request.getAttackerAttackTypeSkill());
+            user.setAttackerDefenseTypeSkill(request.getAttackerDefensiveTypeSkill());
+            user.setAttackerUtilityTypeSkill(request.getAttackerUtilityTypeSkill());
+        } else {
+            throw new RuntimeException("User not found with UUID: " + userId);
+        }
+    }
+
+    @Transactional
+    public void changeDefenderSkill(DefenderSkillChangeRequest request ,UUID userId) {
+        Optional<User> optionalUser = userRepository.findByUserUUID(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setDefenderAttackTypeSkill(request.getDefenderAttackTypeSkill());
+            user.setDefenderDefenseTypeSkill(request.getDefenderDefensiveTypeSkill());
+            user.setDefenderUtilityTypeSkill(request.getDefenderUtilityTypeSkill());
+        } else {
+            // 사용자가 존재하지 않을 경우에 대한 처리
+            throw new RuntimeException("User not found with UUID: " + userId);
+        }
+    }
 }
