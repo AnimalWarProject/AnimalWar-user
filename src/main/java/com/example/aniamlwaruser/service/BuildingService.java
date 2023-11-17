@@ -1,22 +1,27 @@
 package com.example.aniamlwaruser.service;
 
 
-import com.example.aniamlwaruser.domain.entity.Building;
-import com.example.aniamlwaruser.domain.entity.BuildingType;
-import com.example.aniamlwaruser.domain.entity.Grade;
+import com.example.aniamlwaruser.domain.entity.*;
+import com.example.aniamlwaruser.repository.BuildingINVTRepository;
 import com.example.aniamlwaruser.repository.BuildingRepository;
+import com.example.aniamlwaruser.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BuildingService {
     private final BuildingRepository buildingRepository;
+    private final BuildingINVTRepository buildingINVTRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public ResponseEntity<String> saveBuildings() {
@@ -79,6 +84,43 @@ public class BuildingService {
                 Building.builder().name("다이아몬드 울타리").grade(Grade.LEGEND).attackPower(20).defencePower(20).life(70).woodRate(0).ironRate(0).foodRate(0).imagePath("DiamondFence.webp").buildingType(BuildingType.FENCE).build(),
                 Building.builder().name("식물원").grade(Grade.LEGEND).attackPower(0).defencePower(120).life(0).woodRate(0).ironRate(0).foodRate(0).imagePath("LegendFlower.webp").buildingType(BuildingType.FLOWER).build()
         ));
+
+        User user = User.builder().id("222").password(passwordEncoder.encode("222")).build();
+        userRepository.save(user);
+
+        Building building = buildingRepository.findById(1L).get();
+        System.out.println("---------------------------------"+building.getBuildingId());
+        Building building2 = buildingRepository.findById(13L).get();
+        System.out.println("---------------------------------"+building2.getBuildingId());
+        Building building3 = buildingRepository.findById(22L).get();
+        Building building6 = buildingRepository.findById(23L).get();
+        Building building7 = buildingRepository.findById(24L).get();
+        Building building8 = buildingRepository.findById(25L).get();
+        Building building9 = buildingRepository.findById(26L).get();
+        Building building10 = buildingRepository.findById(37L).get();
+        Building building11 = buildingRepository.findById(38L).get();
+        Building building12 = buildingRepository.findById(39L).get();
+        Building building13 = buildingRepository.findById(45L).get();
+        Building building14 = buildingRepository.findById(46L).get();
+
+        if (buildingINVTRepository.findAll().isEmpty()) {
+            buildingINVTRepository.saveAll(List.of(
+                    UserBuilding.builder().user(user).building(building).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building2).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building3).ownedQuantity(1).placedQuantity(1).build(),
+
+                    UserBuilding.builder().user(user).building(building6).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building7).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building8).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building9).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building10).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building11).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building12).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building13).ownedQuantity(1).placedQuantity(1).build(),
+                    UserBuilding.builder().user(user).building(building14).ownedQuantity(1).placedQuantity(1).build()
+            ));
+        }
+
 
         return ResponseEntity.status(HttpStatus.OK)
             .body("Data saved successfully");

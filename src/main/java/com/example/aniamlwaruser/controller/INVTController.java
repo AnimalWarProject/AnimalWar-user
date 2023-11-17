@@ -4,6 +4,7 @@ import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.entity.Grade;
 import com.example.aniamlwaruser.domain.entity.UserAnimal;
+import com.example.aniamlwaruser.domain.entity.UserBuilding;
 import com.example.aniamlwaruser.domain.request.INVTRequest;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
@@ -48,12 +49,22 @@ public class INVTController {
         INVTService.insertAnimal(invtRequest);
     }
 
-    @GetMapping("/grade") // 동물 조회인지, 건물 조회인지 -> 화면에서 동물 선택하면 EntityType을 ANIMAL로 가져오게 해야함..값도 화면에 넘겨주면 됨..!!
-    public List<UserAnimal> findAllByGrade(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
+    @GetMapping("/animals/{grade}")
+    public List<UserAnimal> findAnimalByGrade(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
         System.out.println("---------------------------------userUUID : "+ userUUID);
         List<UserAnimal> allByGrade = INVTService.findAllByGrade(userUUID, Grade.valueOf(grade));
+        return allByGrade;
+    }
+
+    @GetMapping("/buildings/{grade}")
+    public List<UserBuilding> findBuildingByGrade(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        System.out.println("---------------------------------userUUID : "+ userUUID);
+        List<UserBuilding> allByGrade = INVTService.findBuildingByGrade(userUUID, Grade.valueOf(grade));
+        System.out.println("---------------------------------grade : "+ grade);
         return allByGrade;
     }
 

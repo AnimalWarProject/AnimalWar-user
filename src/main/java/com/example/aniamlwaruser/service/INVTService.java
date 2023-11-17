@@ -101,8 +101,12 @@ public class INVTService {
     }
 
     public List<UserAnimal> findAllByGrade(UUID userUUID, Grade grade) {
-        System.out.println("------------------------------------------- " + userUUID);
-        List<UserAnimal> allByGrade = animalINVTRepository.findAllByGrade(userUUID, grade);
+        List<UserAnimal> allByGrade = animalINVTRepository.findAnimalByGrade(userUUID, grade);
+        return allByGrade;
+    }
+
+    public List<UserBuilding> findBuildingByGrade(UUID userUUID, Grade grade) {
+        List<UserBuilding> allByGrade = animalINVTRepository.findBuildingByGrade(userUUID, grade);
         return allByGrade;
     }
 

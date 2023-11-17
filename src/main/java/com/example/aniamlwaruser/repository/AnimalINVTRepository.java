@@ -1,9 +1,6 @@
 package com.example.aniamlwaruser.repository;
 
-import com.example.aniamlwaruser.domain.entity.Animal;
-import com.example.aniamlwaruser.domain.entity.Grade;
-import com.example.aniamlwaruser.domain.entity.User;
-import com.example.aniamlwaruser.domain.entity.UserAnimal;
+import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,5 +26,8 @@ public interface AnimalINVTRepository extends JpaRepository<UserAnimal,Long> {
     void deleteFindByInven(UUID byUserUUID, Long animal);
 
     @Query("SELECT ua FROM UserAnimal ua JOIN Animal as a on a.animalId = ua.animal.animalId WHERE ua.user.userUUID=:userUUID AND ua.animal.grade = :grade")
-    List<UserAnimal> findAllByGrade(UUID userUUID, Grade grade);
+    List<UserAnimal> findAnimalByGrade(UUID userUUID, Grade grade);
+
+    @Query("SELECT ua FROM UserBuilding ua JOIN Building as a on a.buildingId = ua.building.buildingId WHERE ua.user.userUUID=:userUUID AND ua.building.grade = :grade")
+    List<UserBuilding> findBuildingByGrade(UUID userUUID, Grade grade);
 }

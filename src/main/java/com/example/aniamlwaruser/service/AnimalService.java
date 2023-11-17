@@ -748,20 +748,36 @@ public class AnimalService {
         Animal animal3 = animalRepository.findById(22L).get();
         Animal animal4 = animalRepository.findById(234L).get();
         Animal animal5 = animalRepository.findById(100L).get();
+        Animal animal6 = animalRepository.findById(23L).get();
+        Animal animal7 = animalRepository.findById(24L).get();
+        Animal animal8 = animalRepository.findById(25L).get();
+        Animal animal9 = animalRepository.findById(26L).get();
+        Animal animal10 = animalRepository.findById(37L).get();
+        Animal animal11 = animalRepository.findById(38L).get();
+        Animal animal12 = animalRepository.findById(39L).get();
+        Animal animal13 = animalRepository.findById(45L).get();
+        Animal animal14 = animalRepository.findById(46L).get();
 
 
-        if (animalINVTRepository.findAll().isEmpty()) {
+
+       if (animalINVTRepository.findAll().isEmpty()) {
             animalINVTRepository.saveAll(List.of(
-                    UserAnimal.builder()
-                            .user(user).animal(animal).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
-                    UserAnimal.builder()
-                            .user(user).animal(animal2).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
-                    UserAnimal.builder()
-                            .user(user).animal(animal3).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
-                    UserAnimal.builder()
-                            .user(user).animal(animal4).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
-                    UserAnimal.builder()
-                            .user(user).animal(animal5).ownedQuantity(1).placedQuantity(1).upgrade(1).build()
+                    UserAnimal.builder().user(user).animal(animal).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal2).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal3).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal4).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal5).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+
+                    UserAnimal.builder().user(user).animal(animal6).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal7).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal8).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal9).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal10).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal11).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal12).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal13).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
+                    UserAnimal.builder().user(user).animal(animal14).ownedQuantity(1).placedQuantity(1).upgrade(1).build()
+
 
             ));
         }

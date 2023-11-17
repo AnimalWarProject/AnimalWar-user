@@ -50,6 +50,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserAnimal> animalInventory;
 
+    @JsonIgnoreProperties("user")
     @OneToMany(mappedBy = "user")
     private List<UserBuilding> buildingInventory;
 
