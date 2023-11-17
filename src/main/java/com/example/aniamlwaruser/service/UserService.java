@@ -124,6 +124,7 @@ public class UserService {
     }
 
     public void insertAnimalDrawResponse(List<DrawResponse> result) { // 동물 뽑기 결과 저장
+        System.out.println(result.get(0));
         Map<String, Long> animalCountMap = result.stream()
                 .collect(Collectors.groupingBy(DrawResponse::getName, Collectors.counting()));
 
