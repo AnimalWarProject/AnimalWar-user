@@ -3,10 +3,7 @@ package com.example.aniamlwaruser.service;
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
 import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
-import com.example.aniamlwaruser.domain.entity.Building;
-import com.example.aniamlwaruser.domain.entity.RefreshToken;
-import com.example.aniamlwaruser.domain.entity.User;
-import com.example.aniamlwaruser.domain.entity.UserBuilding;
+import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.kafka.FirstTerrainProducer;
 import com.example.aniamlwaruser.domain.kafka.MatchProducer;
 import com.example.aniamlwaruser.domain.request.LoginRequest;
@@ -15,16 +12,15 @@ import com.example.aniamlwaruser.domain.response.LoginResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.exception.InvalidPasswordException;
 import com.example.aniamlwaruser.exception.UserNotFoundException;
-import com.example.aniamlwaruser.repository.BuildingRepository;
-import com.example.aniamlwaruser.repository.RefreshTokenRepository;
-import com.example.aniamlwaruser.repository.UserBuildingRepository;
-import com.example.aniamlwaruser.repository.UserRepository;
+import com.example.aniamlwaruser.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,10 +32,12 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final AnimalRepository animalRepository;
     private final MatchProducer matchProducer;
     private final FirstTerrainProducer firstTerrainProducer;
     private final RefreshTokenRepository refreshTokenRepository;
     private final BuildingRepository buildingRepository;
+    private final AnimalINVTRepository animalINVTRepository;
     private final UserBuildingRepository userBuildingRepository;
 
 
@@ -76,6 +74,26 @@ public class AuthService {
                     .build();
             userBuildingRepository.save(userBuilding);
         }
+
+        // 기본 동물로 공통종족, 일반등급 10마리 랜덤지급
+        List<Animal> commonNormalAnimals = animalRepository.findBySpeciesAndGrade(Species.COMMON, Grade.NORMAL);
+        List<UserAnimal> initialAnimals = new ArrayList<>();
+
+        Collections.shuffle(commonNormalAnimals);
+        List<Animal> selectedAnimals = commonNormalAnimals.subList(0, Math.min(10, commonNormalAnimals.size()));
+
+        for (Animal animal : selectedAnimals) {
+            UserAnimal userAnimal = UserAnimal.builder()
+                    .user(user)
+                    .animal(animal)
+                    .ownedQuantity(1)
+                    .placedQuantity(0)
+                    .upgrade(0)
+                    .build();
+            initialAnimals.add(userAnimal);
+        }
+
+        animalINVTRepository.saveAll(initialAnimals);
 
 
         //카프카
