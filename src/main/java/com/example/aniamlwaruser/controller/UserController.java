@@ -64,7 +64,6 @@ public class UserController {
 
         return userService.requestTerrain(userUUID);
     }
-    
 
     @PostMapping("/draw") // draw 서비스 돈 차감
     public void requestUser(@RequestBody DrawRequest request) {
