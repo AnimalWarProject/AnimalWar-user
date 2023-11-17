@@ -18,6 +18,7 @@ public interface AnimalINVTRepository extends JpaRepository<UserAnimal,Long> {
 
     Optional<UserAnimal> findByUserAndAnimal(User userUUID, Animal animalId);
 
+
     @Query("SELECT a FROM UserAnimal a WHERE a.user.userUUID=:userUUID")
     List<UserAnimal> findUserAnimalByUserUUID(UUID userUUID);
 
