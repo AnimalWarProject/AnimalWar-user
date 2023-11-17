@@ -2,7 +2,8 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
-import com.example.aniamlwaruser.domain.request.DeleteInvenRequest;
+import com.example.aniamlwaruser.domain.request.DeleteAnimalRequest;
+import com.example.aniamlwaruser.domain.request.DeleteBuildingRequest;
 import com.example.aniamlwaruser.domain.request.INVTRequest;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
@@ -47,11 +48,19 @@ public class INVTController {
         INVTService.insertBuilding(invtRequest);
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<Boolean> deleteInvenItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteInvenRequest request){
+    @PostMapping("/delete/animal")
+    public ResponseEntity<Boolean> deleteAnimalItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteAnimalRequest request){
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-        boolean deleted = INVTService.deleteInvenItem(userUUID, request);
+        boolean deleted = INVTService.deleteInvenAnimal(userUUID, request);
+        return ResponseEntity.ok(deleted);
+    }
+
+    @PostMapping("/delete/building")
+    public ResponseEntity<Boolean> deleteBuildingItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteBuildingRequest request){
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        boolean deleted = INVTService.deleteInvenBuilding(userUUID, request);
         return ResponseEntity.ok(deleted);
     }
 

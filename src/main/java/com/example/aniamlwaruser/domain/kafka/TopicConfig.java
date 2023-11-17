@@ -12,7 +12,8 @@ public class TopicConfig {
     public final static String mixResult = "mix";
     public final static String firstTerrain = "first-terrain-request-topic";
     public final static String updateTerrain = "user-terrain-request-topic";
-    public final static String insertMarket = "market";
+    public final static String insertMarketAnimal = "market-animal";
+    public final static String insertMarketBuilding = "market-building";
 
     @Bean
     public NewTopic ownerTopic(){
