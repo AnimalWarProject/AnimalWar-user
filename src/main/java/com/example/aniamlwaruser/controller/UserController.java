@@ -2,8 +2,6 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
-import com.example.aniamlwaruser.domain.request.AttackerSkillChangeRequest;
-import com.example.aniamlwaruser.domain.request.DefenderSkillChangeRequest;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
@@ -62,9 +60,7 @@ public class UserController {
 
     @PostMapping("/terrain")
     public ReTerrainResponse requestTerrain(@AuthenticationPrincipal TokenInfo tokenInfo) {
-//        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-
         return userService.requestTerrain(userUUID);
     }
     
@@ -72,24 +68,5 @@ public class UserController {
     @PostMapping("/draw") // draw 서비스 돈 차감
     public void requestUser(@RequestBody DrawRequest request) {
         userService.requestDraw(request);
-    }
-
-
-    //  해당 사용자의 공격자 스킬이 변경
-    @PutMapping("/changeAttackerSkill")
-    public void changeAttackerSkill(@RequestHeader("Authorization") String accessToken,
-                                    @RequestBody AttackerSkillChangeRequest request){
-        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
-        UUID userUUID = tokenInfo.getUserUUID();
-        userService.changeAttackerSkill(request, userUUID);
-    }
-
-    //  해당 사용자의 수비자 스킬이 변경
-    @PutMapping("/changeDefenderSkill")
-    public void changeDefenderSkill(@RequestHeader("Authorization") String accessToken,
-                                    @RequestBody DefenderSkillChangeRequest request) {
-        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
-        UUID userUUID = tokenInfo.getUserUUID();
-        userService.changeDefenderSkill(request, userUUID);
     }
 }

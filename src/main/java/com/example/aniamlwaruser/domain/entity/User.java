@@ -37,14 +37,6 @@ public class User {
     private int totalWoodRate;
     private int totalIronRate;
 
-    private String attackerAttackTypeSkill;
-    private String attackerDefenseTypeSkill;
-    private String attackerUtilityTypeSkill;
-
-    private String defenderAttackTypeSkill;
-    private String defenderDefenseTypeSkill;
-    private String defenderUtilityTypeSkill;
-
     private String profileImage;
 
     @OneToMany(mappedBy = "user")
@@ -60,30 +52,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private LandForm landForm;
-
-    public void setAttackerAttackTypeSkill(String attackerAttackTypeSkill) {
-        this.attackerAttackTypeSkill = attackerAttackTypeSkill;
-    }
-
-    public void setAttackerDefenseTypeSkill(String attackerDefenseTypeSkill) {
-        this.attackerDefenseTypeSkill = attackerDefenseTypeSkill;
-    }
-
-    public void setAttackerUtilityTypeSkill(String attackerUtilityTypeSkill) {
-        this.attackerUtilityTypeSkill = attackerUtilityTypeSkill;
-    }
-
-    public void setDefenderAttackTypeSkill(String defenderAttackTypeSkill) {
-        this.defenderAttackTypeSkill = defenderAttackTypeSkill;
-    }
-
-    public void setDefenderDefenseTypeSkill(String defenderDefenseTypeSkill) {
-        this.defenderDefenseTypeSkill = defenderDefenseTypeSkill;
-    }
-
-    public void setDefenderUtilityTypeSkill(String defenderUtilityTypeSkill) {
-        this.defenderUtilityTypeSkill = defenderUtilityTypeSkill;
-    }
 
     private int sea;
     private int land;

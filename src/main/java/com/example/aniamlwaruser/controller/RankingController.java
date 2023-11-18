@@ -1,6 +1,7 @@
 package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.domain.entity.User;
+import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.NickNameResponse2;
 import com.example.aniamlwaruser.service.RankingService;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,7 @@ public class RankingController {
     private final RankingService rankingService;
 
     @GetMapping("/byBattlePoint")
-    public List<NickNameResponse2> findTopUserByBattlePoint(){
-        return rankingService.findTopUserByBattlePoint();
-    }
+    public List<NickNameResponse2> findTopUserByBattlePoint(){return rankingService.findTopUserByBattlePoint();}
 
     @GetMapping("/byPower")
     public List<NickNameResponse2> findTopUserByPower(){
