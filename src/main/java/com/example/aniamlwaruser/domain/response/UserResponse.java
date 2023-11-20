@@ -21,7 +21,7 @@ public class UserResponse {
     private int food;
     private int iron;
     private int wood;
-    private int gold;
+    private int gold; //돈
 
     private int attackPower;
     private int defensePower;
@@ -41,6 +41,7 @@ public class UserResponse {
 
     public static UserResponse userResponseBuild(User user) {
         return UserResponse.builder()
+                .uuid(user.getUserUUID())
                 .id(user.getId())
                 .nickName(user.getNickName())
                 .food(user.getFood())
