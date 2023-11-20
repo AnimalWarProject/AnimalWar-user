@@ -6,8 +6,9 @@ import com.example.aniamlwaruser.domain.dto.MixRequest;
 import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.*;
-import com.example.aniamlwaruser.domain.request.DrawRequest;
-import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
+import com.example.aniamlwaruser.domain.kafka.BuyItemProducer;
+import com.example.aniamlwaruser.domain.kafka.CancelItemProducer;
+import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.*;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,8 @@ public class UserService {
     private final UpdateTerrainProducer updateTerrainProducer;
     private final UserAnimalRepository userAnimalRepository;
     private final UserBuildingRepository userBuildingRepository;
+    private final BuyItemProducer buyItemProducer;
+    private final CancelItemProducer cancelItemProducer;
 
 
     // 아이디로 회원 정보 조회
@@ -193,6 +197,132 @@ public class UserService {
         }
         userRepository.saveAll(allUsers);
     }
+
+
+    public void buyAnimal(UUID userUUID, BuyItemRequest request) {
+        int price = request.getPrice();
+        int ownedQuantity = 1; // 새로운 동물의 기본 수량
+        int placedQuantity = 0;
+        User user = userRepository.findByUserUUID(userUUID)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 동물인지 건물인지 확인.
+        Optional<Animal> animalByName = animalRepository.findByName(request.getName());
+        Optional<Building> buildingByName = buildingRepository.findByName(request.getName());
+
+        if (animalByName.isPresent()){
+            Optional<UserAnimal> existingAnimal = // 해당 동물이 인벤토리에 중복되는지 검사.
+                    animalINVTRepository.findByUserUUIDAndAnimalNameAndBuff(userUUID, request.getName(), request.getBuff());
+
+            if (existingAnimal.isPresent()) {
+                UserAnimal animal = existingAnimal.get();
+                ownedQuantity = animal.getOwnedQuantity() + 1; // 있으면 수량만 +1
+                placedQuantity = animal.getPlacedQuantity();
+            }
+            // 사용자의 골드에서 돈 차감
+            user.setGold(user.getGold() - price);
+
+            // 새로운 동물 정보 생성 및 저장
+            InsertAnimalRequest insertAnimalRequest = new InsertAnimalRequest(
+                    userUUID,
+                    request.getItemId(),
+                    ownedQuantity,
+                    placedQuantity,
+                    request.getBuff()
+            );
+
+            System.out.println("동물 Buy 하는중");
+            
+            animalINVTRepository.save(insertAnimalRequest.toEntity());
+            // kafka 를 통해서 해당 아이템 거래 Btn비활성화 만들어야함.
+            BuyBtnRequest buyBtnRequest = new BuyBtnRequest(request.getUserId(), request.getItemId());
+            buyItemProducer.send(buyBtnRequest);
+
+        }else if (buildingByName.isPresent()){
+            Optional<UserBuilding> byUserUUIDAndBuildingNameAndType =
+                    buildingINVTRepository.findByUserUUIDAndBuildingNameAndType(userUUID, request.getName(), request.getType());
+
+            if (byUserUUIDAndBuildingNameAndType.isPresent()) {
+                UserBuilding building = byUserUUIDAndBuildingNameAndType.get();
+                ownedQuantity = building.getOwnedQuantity() + 1; // 있으면 수량만 +1
+                placedQuantity = building.getPlacedQuantity();
+            }
+            // 사용자의 골드에서 돈 차감
+            user.setGold(user.getGold() - price);
+
+            // 새로운 동물 정보 생성 및 저장
+            InsertBuildingRequest insertBuildingRequest = new InsertBuildingRequest(
+                    userUUID,
+                    request.getItemId(),
+                    ownedQuantity,
+                    placedQuantity
+            );
+
+            System.out.println("건물 Buy 하는중");
+            
+            buildingINVTRepository.save(insertBuildingRequest.toEntity());
+            BuyBtnRequest buyBtnRequest = new BuyBtnRequest(request.getUserId(), request.getItemId());
+            buyItemProducer.send(buyBtnRequest);
+        }
+    }
+
+    public void cancelItem(UUID userUUID, CancelItemRequest request){
+        // 동물인지 건물인지 확인.
+        Optional<Animal> animalByName = animalRepository.findByName(request.getName());
+        Optional<Building> buildingByName = buildingRepository.findByName(request.getName());
+
+        if (animalByName.isPresent()){
+            Optional<UserAnimal> byUserUUIDAndAnimalNameAndBuff =
+                    animalINVTRepository.findByUserUUIDAndAnimalNameAndBuff(userUUID, request.getName(), request.getBuff());
+
+            if (byUserUUIDAndAnimalNameAndBuff.isPresent()){
+                UserAnimal userAnimal = byUserUUIDAndAnimalNameAndBuff.get();
+                InsertAnimalRequest animalRequest = new InsertAnimalRequest(
+                        userUUID,
+                        request.getItemId(),
+                        userAnimal.getOwnedQuantity()+1,
+                        userAnimal.getPlacedQuantity(),
+                        request.getBuff()
+                );
+                animalINVTRepository.save(animalRequest.toEntity());
+            }else {
+                InsertAnimalRequest animalRequest = new InsertAnimalRequest(
+                        userUUID,
+                        request.getItemId(),
+                        1,
+                        0,
+                        request.getBuff()
+                );
+                animalINVTRepository.save(animalRequest.toEntity());
+            }
+        }else if (buildingByName.isPresent()){
+            Optional<UserBuilding> byUserUUIDAndBuildingNameAndType =
+                    buildingINVTRepository.findByUserUUIDAndBuildingNameAndType(userUUID, request.getName(), request.getType());
+
+            if (byUserUUIDAndBuildingNameAndType.isPresent()){
+                UserBuilding userBuilding = byUserUUIDAndBuildingNameAndType.get();
+                InsertBuildingRequest buildingRequest = new InsertBuildingRequest(
+                        userUUID,
+                        request.getItemId(),
+                        userBuilding.getOwnedQuantity()+1,
+                        userBuilding.getPlacedQuantity()
+                );
+                buildingINVTRepository.save(buildingRequest.toEntity());
+            }else {
+                InsertBuildingRequest buildingRequest = new InsertBuildingRequest(
+                        userUUID,
+                        request.getItemId(),
+                        1,
+                       0
+                );
+                buildingINVTRepository.save(buildingRequest.toEntity());
+            }
+        }
+
+        CancelBtnRequest cancelBtnRequest = new CancelBtnRequest(userUUID, request.getItemId());
+        cancelItemProducer.send(cancelBtnRequest);
+    }
+
 
 
 //    @Transactional

@@ -14,6 +14,8 @@ public class TopicConfig {
     public final static String updateTerrain = "user-terrain-request-topic";
     public final static String insertMarketAnimal = "market-animal";
     public final static String insertMarketBuilding = "market-building";
+    public final static String buyMarketAnimal = "market-buy-item";
+    public final static String cancelMarketItem = "market-cancel-item";
 
     @Bean
     public NewTopic ownerTopic(){
