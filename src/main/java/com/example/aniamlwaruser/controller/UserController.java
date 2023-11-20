@@ -58,7 +58,6 @@ public class UserController {
 
     @PostMapping("/terrain")
     public ReTerrainResponse requestTerrain(@AuthenticationPrincipal TokenInfo tokenInfo) {
-//        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
 
         return userService.requestTerrain(userUUID);
