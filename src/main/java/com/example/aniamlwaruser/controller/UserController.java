@@ -2,6 +2,8 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
+import com.example.aniamlwaruser.domain.request.BuyItemRequest;
+import com.example.aniamlwaruser.domain.request.CancelItemRequest;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
@@ -44,8 +46,6 @@ public class UserController {
         return userService.findUserByNickName(nickName);
     }
 
-
-
     @PostMapping("/update")
     public ResponseEntity<String> updateUser(@RequestHeader String accessToken,
                                              @RequestBody UserUpdateRequest request) {
@@ -55,8 +55,6 @@ public class UserController {
         userService.updateUser(userUUID, request);
         return ResponseEntity.ok("유저 정보 변경 완료");
     }
-
-
 
     @PostMapping("/terrain")
     public ReTerrainResponse requestTerrain(@AuthenticationPrincipal TokenInfo tokenInfo) {
@@ -68,6 +66,20 @@ public class UserController {
     @PostMapping("/draw") // draw 서비스 돈 차감
     public void requestUser(@RequestBody DrawRequest request) {
         userService.requestDraw(request);
+    }
+
+    @PostMapping("/buyitem") // market구매
+    public void buyItem(@RequestHeader String accessToken, @RequestBody BuyItemRequest request) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        userService.buyAnimal(userUUID, request);
+    }
+
+    @PostMapping("/cancelitem") // market취소
+    public void cancleItem(@RequestHeader String accessToken, @RequestBody CancelItemRequest request) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        userService.cancelItem(userUUID, request);
     }
 
 }

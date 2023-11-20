@@ -21,6 +21,11 @@ public interface BuildingINVTRepository extends JpaRepository<UserBuilding,Long>
     @Query("SELECT B FROM UserBuilding B WHERE B.user.userUUID=:userUUID AND B.building.buildingId=:itemId")
     Optional<UserBuilding> findByUserAndBuildingId(UUID userUUID, Long itemId);
 
+    @Query("SELECT B FROm UserBuilding B WHERE B.user.userUUID=:userUUID AND B.building.name=:name AND B.building.buildingType=:Type")
+    Optional<UserBuilding> findByUserUUIDAndBuildingNameAndType(UUID userUUID, String name, String Type);
+
     @Query("SELECT ub FROM UserBuilding ub WHERE ub.user.userUUID=:userUUID AND ub.building.grade=:grade")
     List<UserBuilding> findAllByGrade(UUID userUUID, Grade grade);
+
+
 }
