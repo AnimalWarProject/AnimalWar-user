@@ -6,8 +6,6 @@ import com.example.aniamlwaruser.domain.dto.MixRequest;
 import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.*;
-import com.example.aniamlwaruser.domain.request.AttackerSkillChangeRequest;
-import com.example.aniamlwaruser.domain.request.DefenderSkillChangeRequest;
 import com.example.aniamlwaruser.domain.request.DrawRequest;
 import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
