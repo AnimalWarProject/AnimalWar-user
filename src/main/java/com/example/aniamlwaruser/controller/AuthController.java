@@ -22,6 +22,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest){
+        System.out.println("로그인");
         return authService.login(loginRequest);
     }
 
@@ -39,10 +40,6 @@ public class AuthController {
 
     @GetMapping("/me")
     public TokenInfo me(@AuthenticationPrincipal TokenInfo tokenInfo){
-
-        System.out.println(tokenInfo.getId());
-        System.out.println(tokenInfo.getNickName());
-
         return tokenInfo;
     }
 

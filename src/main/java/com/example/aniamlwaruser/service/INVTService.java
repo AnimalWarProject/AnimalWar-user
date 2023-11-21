@@ -114,7 +114,8 @@ public class INVTService {
                 request.getGrade(),
                 request.getSpecies(),
                 request.getBuff(),
-                request.getPrice());
+                request.getPrice(),
+                request.getImagePath());
         marketInsertAnimalProducer.send(marketAnimalInsertRequest);
         return true;
     }
@@ -140,7 +141,8 @@ public class INVTService {
                 request.getName(),
                 request.getGrade(),
                 request.getBuildingType(),
-                request.getPrice());
+                request.getPrice(),
+                request.getImagePath());
         marketInsertBuildingProducer.send(marketBuildingInsertRequest);
         return true;
     }

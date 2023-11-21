@@ -16,6 +16,7 @@ public class TopicConfig {
     public final static String insertMarketBuilding = "market-building";
     public final static String buyMarketAnimal = "market-buy-item";
     public final static String cancelMarketItem = "market-cancel-item";
+    public final static String deleteMarketItem = "market-delete-item";
 
     @Bean
     public NewTopic ownerTopic(){
