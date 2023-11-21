@@ -1,11 +1,8 @@
 package com.example.aniamlwaruser.repository;
 
 import com.example.aniamlwaruser.domain.entity.Animal;
-import com.example.aniamlwaruser.domain.entity.Grade;
 import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.entity.UserAnimal;
-import com.example.aniamlwaruser.domain.response.AnimalsResponse;
-import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

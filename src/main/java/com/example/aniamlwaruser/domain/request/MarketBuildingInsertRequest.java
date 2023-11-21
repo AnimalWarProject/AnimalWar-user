@@ -8,7 +8,8 @@ public record MarketBuildingInsertRequest(
         String name,
         String grade,
         String species,
-        Integer price
+        Integer price,
+        String imagePath
 
 ) {
 
