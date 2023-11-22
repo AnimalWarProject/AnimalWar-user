@@ -217,18 +217,18 @@ public class UserService {
             Animal animal = animalRepository.findById(mixRequest.getMixResultId())
                     .orElseThrow(() -> new RuntimeException("Animal not found"));
 
-            // Check if the animal already exists in the user's inventory
+        // Check if the animal already exists in the user's inventory
             UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
-                    .orElseGet(() -> UserAnimal.builder()
+                    .orElseGet(() -> UserAnimal.builder() // 없던 동물이라면
                             .user(user)
                             .animal(animal)
-                            .ownedQuantity(0) // If not present, start with zero
-                            .placedQuantity(0) // Assume new animal is not placed  TODO 이미 가지고 있는 동물이라면?
-                            .upgrade(0) // Assume upgrades start at 0 for new animal
+                            .ownedQuantity(0)
+                            .placedQuantity(0)
+                            .upgrade(0)
                             .build());
 
             // Update owned quantity
-            userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
+            userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1); // 원래 가지고 있던 동물이라면 getOwnedQuantity +1
 
             // Save the updated/ new user animal
             userAnimalRepository.save(userAnimal);
@@ -247,7 +247,7 @@ public class UserService {
                     .orElseGet(() -> UserBuilding.builder()
                             .user(user)
                             .building(building)
-                            .ownedQuantity(0) // If not present, start with zero
+                            .ownedQuantity(1) // If not present, start with zero
                             .placedQuantity(0) // Assume new animal is not placed  TODO 이미 가지고 있는 동물이라면?
                             .build());
 
