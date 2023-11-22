@@ -20,10 +20,10 @@ public class MixRequest {
 //    private String userId;
 //    private String nickName;
     private EntityType entityType;
-    private Long animalId;
+    private Long mixResultId;
     private String name;
     private Grade grade;
     private Species species;
     private String imagePath;
-    private List<Long> userAnimalList;
+    private List<Long> selectedList;
 }

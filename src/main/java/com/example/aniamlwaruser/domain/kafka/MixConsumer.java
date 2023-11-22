@@ -14,14 +14,14 @@ public class MixConsumer {
 
     @KafkaListener(topics = TopicConfig.mixResult, groupId = "animalwar-user-group")
     public void consumeMixResult(MixRequest mixRequest) {
-        System.out.println("consumer-------------------------"+mixRequest.getAnimalId());
+        System.out.println("consumer-------------------------"+mixRequest.getMixResultId());
         System.out.println("consumer-------------------------"+mixRequest.getName());
         System.out.println("consumer-------------------------"+mixRequest.getGrade());
         System.out.println("consumer-------------------------"+mixRequest.getEntityType());
         System.out.println("consumer-------------------------"+mixRequest.getImagePath());
-        System.out.println("consumer-------------------------"+mixRequest.getUserAnimalList());
+        System.out.println("consumer-------------------------"+mixRequest.getSelectedList());
 
-            userService.saveInventoryAndDeleteMixed(mixRequest);
+        userService.saveInventoryAndDeleteMixed(mixRequest);
 
 
     }

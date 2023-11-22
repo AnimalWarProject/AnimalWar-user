@@ -199,19 +199,22 @@ public class UserService {
 
     @Transactional
     public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
-        // saveInventory 실행
-        System.out.println("mixRequestSSSSSSSAAAAAAAAAAVVVVVVVEEEEEEEEEE  "+mixRequest);
-        saveInventory(mixRequest);
-        // deleteMixed 실행
-        deleteMixed(mixRequest.getUserAnimalList()); // TODO 삭제
+        if(mixRequest.getEntityType() == EntityType.ANIMAL) { // 동물 합성일 때
+            System.out.println("mixRequestSSSSSSSAAAAAAAAAAVVVVVVVEEEEEEEEEE  ANIMAL  "+mixRequest);
+            saveAnimalInventory(mixRequest); // 합성 결과 저장 실행
+            deleteMixedAnimal(mixRequest.getSelectedList()); // 인벤토리 삭제 실행
+        } else { // 건물 합성일 떄
+            System.out.println("mixRequestSSSSSSSAAAAAAAAAAVVVVVVVEEEEEEEEEE BUILDING "+mixRequest);
+            saveBuildingInventory(mixRequest);
+            deleteMixedBuilding(mixRequest.getSelectedList());
+        }
     }
 
-    public void saveInventory(MixRequest mixRequest) {
-        if(mixRequest.getEntityType() == EntityType.ANIMAL) {
+    public void saveAnimalInventory(MixRequest mixRequest) {
             User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            Animal animal = animalRepository.findById(mixRequest.getAnimalId())
+            Animal animal = animalRepository.findById(mixRequest.getMixResultId())
                     .orElseThrow(() -> new RuntimeException("Animal not found"));
 
             // Check if the animal already exists in the user's inventory
@@ -229,11 +232,14 @@ public class UserService {
 
             // Save the updated/ new user animal
             userAnimalRepository.save(userAnimal);
-        } else { // 건물 합성 결과 넣기
+    }
+
+    public void saveBuildingInventory(MixRequest mixRequest) {
+        // 건물 합성 결과 넣기
             User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            Building building = buildingRepository.findById(mixRequest.getAnimalId())
+            Building building = buildingRepository.findById(mixRequest.getMixResultId())
                     .orElseThrow(() -> new RuntimeException("Animal not found"));
 
             // Check if the animal already exists in the user's inventory
@@ -250,29 +256,32 @@ public class UserService {
 
             // Save the updated/ new user animal
             userBuildingRepository.save(userBuilding);
-        }
-
     }
 
     @Transactional
-    public void deleteMixed(List<Long> selectedUserAnimalIds) {
+    public void deleteMixedAnimal(List<Long> selectedUserAnimalIds) {
         if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
-
             for (long animalId: selectedUserAnimalIds) {
-                UserAnimal userAnimal = userAnimalRepository.findByAnimal_AnimalId(animalId).orElseThrow(() -> new RuntimeException("NOT FOUND ANIMALID"));
-
+                UserAnimal userAnimal = userAnimalRepository.findByAnimal_AnimalId(animalId).orElseThrow(() -> new RuntimeException("NOT FOUND ANIMAL ID"));
                 if (userAnimal.getOwnedQuantity() > 1) {
                     userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() -1);
-
                 } else {
                     userAnimalRepository.deleteById(userAnimal.getId()); // count가 1개인걸 선택하면 무조건 삭제이기 떄문에 위에서 for문 돌려준거 바로 삭제
                 }
             }
         }
+    }
 
-    // TODO 들어온 list를 for문 돌려서 해당되는 id 조회 후 개수 확인..
-    //  2개 이상이면 update쿼리(count -1)
-    //  1개면 deleteById로 컬럼 삭제
-    //  이걸 반복문 돌려 4번..
+    public void deleteMixedBuilding(List<Long> selectedUserBuildingIds) {
+        if (selectedUserBuildingIds != null && !selectedUserBuildingIds.isEmpty()) {
+            for (long buildingId : selectedUserBuildingIds) {
+                UserBuilding userBuilding = userBuildingRepository.findByBuilding_BuildingId(buildingId).orElseThrow(() -> new RuntimeException("NOT FOUND BUILDING ID"));
+                if(userBuilding.getOwnedQuantity() > 1) {
+                    userBuilding.setOwnedQuantity(userBuilding.getOwnedQuantity() -1);
+                } else {
+                    userBuildingRepository.deleteById(userBuilding.getId());
+                }
+            }
+        }
     }
 }
