@@ -12,6 +12,7 @@ import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.*;
 import com.example.aniamlwaruser.domain.kafka.UpdateTerrainProducer;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -195,42 +197,82 @@ public class UserService {
     }
 
 
-//    @Transactional
-//    public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
-//        // saveInventory 실행
-//        saveInventory(mixRequest);
-//        // deleteMixed 실행
-//        deleteMixed(mixRequest.getUserAnimalList());
-//    }
-
-    public void saveInventory(MixRequest mixRequest) {
-        User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Animal animal = animalRepository.findById(mixRequest.getAnimalId())
-                .orElseThrow(() -> new RuntimeException("Animal not found"));
-
-        // Check if the animal already exists in the user's inventory
-        UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
-                .orElseGet(() -> UserAnimal.builder()
-                        .user(user)
-                        .animal(animal)
-                        .ownedQuantity(0) // If not present, start with zero
-                        .placedQuantity(0) // Assume new animal is not placed
-                        .upgrade(0) // Assume upgrades start at 0 for new animal
-                        .build());
-
-        // Update owned quantity
-        userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
-
-        // Save the updated/ new user animal
-        userAnimalRepository.save(userAnimal);
+    @Transactional
+    public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
+        // saveInventory 실행
+        System.out.println("mixRequestSSSSSSSAAAAAAAAAAVVVVVVVEEEEEEEEEE  "+mixRequest);
+        saveInventory(mixRequest);
+        // deleteMixed 실행
+        deleteMixed(mixRequest.getUserAnimalList()); // TODO 삭제
     }
 
-//    public void deleteMixed(List<Long> selectedUserAnimalIds) {
-//        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
-//            // Batch delete by IDs to improve performance
-//            userAnimalRepository.deleteAllByUserAnimalIdIn(selectedUserAnimalIds);
-//        }
-//    }
+    public void saveInventory(MixRequest mixRequest) {
+        if(mixRequest.getEntityType() == EntityType.ANIMAL) {
+            User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            Animal animal = animalRepository.findById(mixRequest.getAnimalId())
+                    .orElseThrow(() -> new RuntimeException("Animal not found"));
+
+            // Check if the animal already exists in the user's inventory
+            UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
+                    .orElseGet(() -> UserAnimal.builder()
+                            .user(user)
+                            .animal(animal)
+                            .ownedQuantity(0) // If not present, start with zero
+                            .placedQuantity(0) // Assume new animal is not placed  TODO 이미 가지고 있는 동물이라면?
+                            .upgrade(0) // Assume upgrades start at 0 for new animal
+                            .build());
+
+            // Update owned quantity
+            userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
+
+            // Save the updated/ new user animal
+            userAnimalRepository.save(userAnimal);
+        } else { // 건물 합성 결과 넣기
+            User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            Building building = buildingRepository.findById(mixRequest.getAnimalId())
+                    .orElseThrow(() -> new RuntimeException("Animal not found"));
+
+            // Check if the animal already exists in the user's inventory
+            UserBuilding userBuilding = userBuildingRepository.findByUserAndBuilding(user, building)
+                    .orElseGet(() -> UserBuilding.builder()
+                            .user(user)
+                            .building(building)
+                            .ownedQuantity(0) // If not present, start with zero
+                            .placedQuantity(0) // Assume new animal is not placed  TODO 이미 가지고 있는 동물이라면?
+                            .build());
+
+            // Update owned quantity
+            userBuilding.setOwnedQuantity(userBuilding.getOwnedQuantity() + 1);
+
+            // Save the updated/ new user animal
+            userBuildingRepository.save(userBuilding);
+        }
+
+    }
+
+    @Transactional
+    public void deleteMixed(List<Long> selectedUserAnimalIds) {
+        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
+
+            for (long animalId: selectedUserAnimalIds) {
+                UserAnimal userAnimal = userAnimalRepository.findByAnimal_AnimalId(animalId).orElseThrow(() -> new RuntimeException("NOT FOUND ANIMALID"));
+
+                if (userAnimal.getOwnedQuantity() > 1) {
+                    userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() -1);
+
+                } else {
+                    userAnimalRepository.deleteById(userAnimal.getId()); // count가 1개인걸 선택하면 무조건 삭제이기 떄문에 위에서 for문 돌려준거 바로 삭제
+                }
+            }
+        }
+
+    // TODO 들어온 list를 for문 돌려서 해당되는 id 조회 후 개수 확인..
+    //  2개 이상이면 update쿼리(count -1)
+    //  1개면 deleteById로 컬럼 삭제
+    //  이걸 반복문 돌려 4번..
+    }
 }

@@ -74,7 +74,6 @@ public class INVTController {
     public List<UserAnimal> findAnimalByGrade(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-        System.out.println("---------------------------------userUUID : "+ userUUID);
         List<UserAnimal> allByGrade = INVTService.findAllByGrade(userUUID, Grade.valueOf(grade));
         return allByGrade;
     }
@@ -83,11 +82,17 @@ public class INVTController {
     public List<UserBuilding> findBuildingByGrade(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-        System.out.println("---------------------------------userUUID : "+ userUUID);
         List<UserBuilding> allByGrade = INVTService.findBuildingByGrade(userUUID, Grade.valueOf(grade));
-        System.out.println("---------------------------------grade : "+ grade);
         return allByGrade;
     }
 
+
+    @GetMapping("/grade")
+    public List<UserAnimal> findAnimalByGrade2(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        List<UserAnimal> allByGrade = INVTService.findAllByGrade(userUUID, Grade.valueOf(grade));
+        return allByGrade;
+    }
 
 }
