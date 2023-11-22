@@ -6,14 +6,11 @@ import com.example.aniamlwaruser.domain.dto.MixRequest;
 import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.*;
-import com.example.aniamlwaruser.domain.kafka.BuyItemProducer;
-import com.example.aniamlwaruser.domain.kafka.CancelItemProducer;
-import com.example.aniamlwaruser.domain.kafka.DeleteItemProducer;
+import com.example.aniamlwaruser.domain.kafka.*;
 import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.*;
-import com.example.aniamlwaruser.domain.kafka.UpdateTerrainProducer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -41,6 +38,7 @@ public class UserService {
     private final BuyItemProducer buyItemProducer;
     private final CancelItemProducer cancelItemProducer;
     private final DeleteItemProducer deleteItemProducer;
+    private final UpgradeProducer upgradeProducer;
 
 
     // 아이디로 회원 정보 조회
@@ -331,11 +329,20 @@ public class UserService {
                 buildingINVTRepository.save(buildingRequest.toEntity());
             }
         }
-
         CancelBtnRequest cancelBtnRequest = new CancelBtnRequest(userUUID, request.getItemId());
         cancelItemProducer.send(cancelBtnRequest);
     }
 
+    public void upGrade(UUID userUUID, UpgradeRequest request){ // 강화서비스 요청
+        System.out.println("업그레이드 : " + request.itemId() + ", " + request.buff());
+        Optional<UserAnimal> byUserUUIDAndAnimal = animalINVTRepository.findByUserUUIDAndAnimal(userUUID, request.itemId());// 해당 아이템이 존재하는지 확인
+        if (byUserUUIDAndAnimal.isPresent()){
+            UpgradeRequest upgradeRequest = new UpgradeRequest(userUUID, request.itemId(), request.buff());
+            upgradeProducer.send(upgradeRequest);
+        }else {
+            System.out.println("존재하지 않음");
+        }
+    }
 
 
 //    @Transactional
