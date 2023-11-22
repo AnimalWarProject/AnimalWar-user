@@ -27,11 +27,16 @@ public interface AnimalINVTRepository extends JpaRepository<UserAnimal,Long> {
     List<UserAnimal> findUserAnimalByUserUUID(UUID userUUID);
 
     @Query("SELECT ua FROM UserAnimal ua WHERE ua.user.userUUID = :byUserUUID AND ua.animal.animalId = :animal")
-    Optional<UserAnimal> findByInven(UUID byUserUUID, Long animal);
+    UserAnimal findByInven(UUID byUserUUID, Long animal);
+
+    @Query("SELECT A FROM UserAnimal A WHERE A.user.userUUID=:userUUID AND A.animal.animalId=:itemId")
+    Optional<UserAnimal> findByUserUUIDAndAnimal(UUID userUUID, Long itemId);
 
     @Modifying
     @Query("DELETE FROM UserAnimal ua WHERE ua.user.userUUID = :byUserUUID AND ua.animal.animalId = :animal")
     void deleteFindByInven(UUID byUserUUID, Long animal);
+
+
 
 //    @Query("SELECT ua FROM UserAnimal ua WHERE ua.user.userUUID=:userUUID AND ua.animal.grade = :grade")
 //    List<UserAnimal> findAllByGrade(UUID userUUID, Grade grade);

@@ -32,7 +32,6 @@ public class INVTController {
 
     @GetMapping("/buildings") // 건물 인벤토리 불러오기
     public List<BuildingsResponse> getBuildings(@RequestHeader("Authorization") String accessToken){
-
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
         return INVTService.getBuildings(userUUID);

@@ -1,6 +1,5 @@
 package com.example.aniamlwaruser.service;
 
-import com.example.aniamlwaruser.domain.dto.SendResultUpgrade;
 import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.kafka.MarketInsertAnimalProducer;
 import com.example.aniamlwaruser.domain.kafka.MarketInsertBuildingProducer;
@@ -148,16 +147,13 @@ public class INVTService {
     }
 
     @Transactional
-    public void updateUpgrade(SendResultUpgrade result){
-        Optional<UserAnimal> qtyFindByInven = animalINVTRepository.findByInven(result.getUserUUID(), result.getAnimalId());
-        UserAnimal ua = qtyFindByInven.get();
-        if (ua.getOwnedQuantity() < 2){
-            animalINVTRepository.deleteFindByInven(result.getUserUUID(), result.getAnimalId()); // 남은 수량이 1개 미만이면 삭제
+    public void updateUpgrade(UpgradeRequest result){
+        UserAnimal qtyFindByInven = animalINVTRepository.findByInven(result.userUUID(), result.itemId());
+        if (qtyFindByInven.getOwnedQuantity() == 0){ //강화된 동물이 있으면 +1 없으면 새로추가
+            INVTRequest invtRequest = new INVTRequest(result.userUUID(), result.itemId(), 1, 0, result.buff()); // 강화된 동물을 저장한다.
+            animalINVTRepository.save(invtRequest.toEntity());
         }else {
-            ua.setUpgrade(ua.getOwnedQuantity()-1);
+            qtyFindByInven.setOwnedQuantity(qtyFindByInven.getOwnedQuantity() + 1);
         }
-        INVTRequest invtRequest = new INVTRequest(result.getUserUUID(), result.getAnimalId(), 1, 0, result.getResultUpgrade()); // 강화된 동물을 저장한다.
-        animalINVTRepository.save(invtRequest.toEntity());
     }
-
 }

@@ -88,4 +88,11 @@ public class UserController {
         userService.cancelItem(userUUID, request);
     }
 
+    @PostMapping("/upgrade") // 강화서비스
+    public void upGrade(@RequestHeader("Authorization") String accessToken, @RequestBody UpgradeRequest request) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        userService.upGrade(userUUID, request);
+    }
+
 }
