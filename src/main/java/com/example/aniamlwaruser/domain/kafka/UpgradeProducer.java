@@ -11,6 +11,7 @@ public class UpgradeProducer {
     private final KafkaTemplate<String, UpgradeRequest> template;
 
     public void send(UpgradeRequest request){
+        System.out.println("upgrade : " + request.userUUID() + ", " + request.itemId() + ", " + request.buff());
         template.send(TopicConfig.upgrade, request);
     }
 

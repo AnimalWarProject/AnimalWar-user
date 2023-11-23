@@ -50,6 +50,17 @@ public class INVTService {
         )).toList();
     }
 
+    public AnimalsResponse getAnimal(UUID userUUID, Long itemId){
+        UserAnimal byUserUUID = animalINVTRepository.findByInven(userUUID, itemId);
+        AnimalsResponse animalsResponse = new AnimalsResponse(
+                byUserUUID.getId(),
+                byUserUUID.getAnimal(),
+                byUserUUID.getOwnedQuantity(),
+                byUserUUID.getPlacedQuantity(),
+                byUserUUID.getUpgrade());
+        return animalsResponse;
+    }
+
     public void insertAnimal(INVTRequest invtRequest){
 
         User user = userRepository.findByUserUUID(invtRequest.uuid())
@@ -149,7 +160,7 @@ public class INVTService {
     @Transactional
     public void updateUpgrade(UpgradeRequest result){
         UserAnimal qtyFindByInven = animalINVTRepository.findByInven(result.userUUID(), result.itemId());
-        if (qtyFindByInven.getOwnedQuantity() == 0){ //강화된 동물이 있으면 +1 없으면 새로추가
+        if (qtyFindByInven == null){ //강화된 동물이 있으면 +1 없으면 새로추가
             INVTRequest invtRequest = new INVTRequest(result.userUUID(), result.itemId(), 1, 0, result.buff()); // 강화된 동물을 저장한다.
             animalINVTRepository.save(invtRequest.toEntity());
         }else {
