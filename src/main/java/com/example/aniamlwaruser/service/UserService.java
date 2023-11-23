@@ -338,6 +338,13 @@ public class UserService {
         Optional<UserAnimal> byUserUUIDAndAnimal = animalINVTRepository.findByUserUUIDAndAnimal(userUUID, request.itemId());// 해당 아이템이 존재하는지 확인
         if (byUserUUIDAndAnimal.isPresent()){
             UpgradeRequest upgradeRequest = new UpgradeRequest(userUUID, request.itemId(), request.buff());
+            if (byUserUUIDAndAnimal.get().getOwnedQuantity() < 2){
+                UserAnimal userAnimal = byUserUUIDAndAnimal.get();
+                animalINVTRepository.delete(userAnimal);
+            }else {
+                UserAnimal userAnimal = byUserUUIDAndAnimal.get();
+                userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() - 1);
+            }
             upgradeProducer.send(upgradeRequest);
         }else {
             System.out.println("존재하지 않음");
