@@ -138,7 +138,6 @@ public class UserService {
     }
 
     public void insertAnimalDrawResponse(List<DrawResponse> result) { // 동물 뽑기 결과 저장
-        System.out.println(result.get(0));
         Map<String, Long> animalCountMap = result.stream()
                 .collect(Collectors.groupingBy(DrawResponse::getName, Collectors.counting()));
 
@@ -269,8 +268,7 @@ public class UserService {
                     placedQuantity
             );
 
-            System.out.println("건물 Buy 하는중");
-            
+
             buildingINVTRepository.save(insertBuildingRequest.toEntity());
             BuyBtnRequest buyBtnRequest = new BuyBtnRequest(request.getUserId(), request.getItemId());
             buyItemProducer.send(buyBtnRequest);
@@ -334,7 +332,6 @@ public class UserService {
     }
 
     public void upGrade(UUID userUUID, UpgradeRequest request){ // 강화서비스 요청
-        System.out.println("업그레이드 : " + request.itemId() + ", " + request.buff());
         Optional<UserAnimal> byUserUUIDAndAnimal = animalINVTRepository.findByUserUUIDAndAnimal(userUUID, request.itemId());// 해당 아이템이 존재하는지 확인
         if (byUserUUIDAndAnimal.isPresent()){
             UpgradeRequest upgradeRequest = new UpgradeRequest(userUUID, request.itemId(), request.buff());

@@ -42,7 +42,6 @@ public class INVTController {
                                       @PathVariable("itemId") Long itemId){
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-        System.out.println("동물 조회 : " + itemId);
         return INVTService.getAnimal(userUUID, itemId);
     }
 
