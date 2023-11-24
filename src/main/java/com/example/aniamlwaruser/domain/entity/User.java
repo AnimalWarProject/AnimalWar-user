@@ -3,8 +3,6 @@ package com.example.aniamlwaruser.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +29,7 @@ public class User {
     private int attackPower;
     private int defensePower;
     private int life;
+    private int maxLife;
     private int battlePoint;
 
     private int totalFoodRate;
