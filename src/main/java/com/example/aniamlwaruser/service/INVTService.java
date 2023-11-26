@@ -1,8 +1,9 @@
 package com.example.aniamlwaruser.service;
 
-import com.example.aniamlwaruser.domain.dto.SendResultUpgrade;
 import com.example.aniamlwaruser.domain.entity.*;
-import com.example.aniamlwaruser.domain.request.INVTRequest;
+import com.example.aniamlwaruser.domain.kafka.MarketInsertAnimalProducer;
+import com.example.aniamlwaruser.domain.kafka.MarketInsertBuildingProducer;
+import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import com.example.aniamlwaruser.repository.*;
@@ -17,6 +18,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class INVTService {
+
+    private final MarketInsertAnimalProducer marketInsertAnimalProducer;
+    private final MarketInsertBuildingProducer marketInsertBuildingProducer;
 
     private final UserRepository userRepository;
     private final AnimalRepository animalRepository;
@@ -44,6 +48,17 @@ public class INVTService {
                 e.getOwnedQuantity(),
                 e.getPlacedQuantity()
         )).toList();
+    }
+
+    public AnimalsResponse getAnimal(UUID userUUID, Long itemId){
+        UserAnimal byUserUUID = animalINVTRepository.findByInven(userUUID, itemId);
+        AnimalsResponse animalsResponse = new AnimalsResponse(
+                byUserUUID.getId(),
+                byUserUUID.getAnimal(),
+                byUserUUID.getOwnedQuantity(),
+                byUserUUID.getPlacedQuantity(),
+                byUserUUID.getUpgrade());
+        return animalsResponse;
     }
 
     public void insertAnimal(INVTRequest invtRequest){
@@ -88,16 +103,136 @@ public class INVTService {
     }
 
     @Transactional
-    public void updateUpgrade(SendResultUpgrade result){
-        Optional<UserAnimal> qtyFindByInven = animalINVTRepository.findByInven(result.getUserUUID(), result.getAnimalId());
-        UserAnimal ua = qtyFindByInven.get();
-        if (ua.getOwnedQuantity() < 2){
-            animalINVTRepository.deleteFindByInven(result.getUserUUID(), result.getAnimalId()); // 남은 수량이 1개 미만이면 삭제
-        }else {
-            ua.setUpgrade(ua.getOwnedQuantity()-1);
+    public Boolean deleteInvenAnimal(UUID userUUID, DeleteAnimalRequest request){
+        Optional<UserAnimal> byUserAndAnimalId = animalINVTRepository.findByUserAndAnimalId(userUUID, request.getItemId());
+
+        if (byUserAndAnimalId.isPresent()){
+            if (byUserAndAnimalId.get().getOwnedQuantity() < 2){ // 만약 1개이하라면 삭제
+                UserAnimal userAnimal = byUserAndAnimalId.get();
+                animalINVTRepository.delete(userAnimal);
+            }else {
+                UserAnimal userAnimal = byUserAndAnimalId.get(); // 2개이상이면 수량 -1
+                userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity()-1);
+            }
+        }else{
+            System.out.println("잘못된 정보입니다.");
         }
-        INVTRequest invtRequest = new INVTRequest(result.getUserUUID(), result.getAnimalId(), 1, 0, result.getResultUpgrade()); // 강화된 동물을 저장한다.
-        animalINVTRepository.save(invtRequest.toEntity());
+        MarketAnimalInsertRequest marketAnimalInsertRequest = new MarketAnimalInsertRequest(
+                userUUID,
+                request.getItemId(),
+                request.getName(),
+                request.getGrade(),
+                request.getSpecies(),
+                request.getBuff(),
+                request.getPrice(),
+                request.getImagePath());
+        marketInsertAnimalProducer.send(marketAnimalInsertRequest);
+        return true;
     }
+
+    @Transactional
+    public Boolean deleteInvenBuilding(UUID userUUID, DeleteBuildingRequest request){
+        Optional<UserBuilding> byUserAndBuildingId = buildingINVTRepository.findByUserAndBuildingId(userUUID, request.getItemId());
+
+        if (byUserAndBuildingId.isPresent()){
+            if (byUserAndBuildingId.get().getOwnedQuantity() < 2){ // 만약 1개이하라면 삭제
+                UserBuilding userBuilding = byUserAndBuildingId.get();
+                buildingINVTRepository.delete(userBuilding);
+            }else {
+                UserBuilding userBuilding = byUserAndBuildingId.get(); // 2개이상이면 수량 -1
+                userBuilding.setOwnedQuantity(userBuilding.getOwnedQuantity()-1);
+            }
+        }else{
+            System.out.println("잘못된 정보입니다.");
+        }
+        MarketBuildingInsertRequest marketBuildingInsertRequest = new MarketBuildingInsertRequest(
+                userUUID,
+                request.getItemId(),
+                request.getName(),
+                request.getGrade(),
+                request.getBuildingType(),
+                request.getPrice(),
+                request.getImagePath());
+        marketInsertBuildingProducer.send(marketBuildingInsertRequest);
+        return true;
+    }
+
+    @Transactional
+    public void updateUpgrade(UpgradeRequest result){
+        UserAnimal qtyFindByInven = animalINVTRepository.findByInven(result.userUUID(), result.itemId());
+        if (qtyFindByInven == null){ //강화된 동물이 있으면 +1 없으면 새로추가
+            INVTRequest invtRequest = new INVTRequest(result.userUUID(), result.itemId(), 1, 0, result.buff()); // 강화된 동물을 저장한다.
+            animalINVTRepository.save(invtRequest.toEntity());
+        }else {
+            qtyFindByInven.setOwnedQuantity(qtyFindByInven.getOwnedQuantity() + 1);
+        }
+    }
+
+
+    @Transactional
+    public Boolean updatePlacedQuantity(UUID userUUID, UpdateItem updateItem) {
+        EntityType entityType = updateItem.getEntityType();
+        Long itemId = updateItem.getItemId();
+        int newPlacedQuantity = updateItem.getPlacedQuantity();
+
+        if (entityType == EntityType.ANIMAL) {
+            Optional<UserAnimal> userAnimalOpt = animalINVTRepository.findByUserAndAnimalId(userUUID, itemId);
+            if (userAnimalOpt.isPresent()) {
+                UserAnimal userAnimal = userAnimalOpt.get();
+                if(newPlacedQuantity <= userAnimal.getOwnedQuantity()) {
+                    userAnimal.setPlacedQuantity(newPlacedQuantity);
+                }
+            }
+        } else if (entityType == EntityType.BUILDING) {
+            Optional<UserBuilding> userBuildingOpt = buildingINVTRepository.findByUserAndBuildingId(userUUID, itemId);
+            if (userBuildingOpt.isPresent()) {
+                UserBuilding userBuilding = userBuildingOpt.get();
+                if(newPlacedQuantity <= userBuilding.getOwnedQuantity()) {
+                    userBuilding.setPlacedQuantity(newPlacedQuantity);
+                }
+            }
+        }
+
+
+        User user = userRepository.findById(userUUID).orElse(null);
+        if (user != null) {
+            user.calculateTotalRates();
+            user.updateBattleStats();
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean removePlace(UUID userUUID, RemoveItem removeItem) {
+        EntityType entityType = removeItem.getEntityType();
+        Long itemId = removeItem.getItemId();
+        int removeAmount = removeItem.getRemoveQuantity(); // 제거할 양
+
+        if (entityType == EntityType.ANIMAL) {
+            Optional<UserAnimal> userAnimalOpt = animalINVTRepository.findByUserAndAnimalId(userUUID, itemId);
+            if (userAnimalOpt.isPresent()) {
+                UserAnimal userAnimal = userAnimalOpt.get();
+                if (userAnimal.getPlacedQuantity() >= removeAmount) {
+                    userAnimal.setPlacedQuantity(userAnimal.getPlacedQuantity() - removeAmount);
+                }
+            }
+        } else if (entityType == EntityType.BUILDING) {
+            Optional<UserBuilding> userBuildingOpt = buildingINVTRepository.findByUserAndBuildingId(userUUID, itemId);
+            if (userBuildingOpt.isPresent()) {
+                UserBuilding userBuilding = userBuildingOpt.get();
+                if (userBuilding.getPlacedQuantity() >= removeAmount) {
+                    userBuilding.setPlacedQuantity(userBuilding.getPlacedQuantity() - removeAmount);
+                }
+            }
+        }
+
+        User user = userRepository.findById(userUUID).orElse(null);
+        if (user != null) {
+            user.calculateTotalRates();
+            user.updateBattleStats();
+        }
+        return true;
+    }
+
 
 }

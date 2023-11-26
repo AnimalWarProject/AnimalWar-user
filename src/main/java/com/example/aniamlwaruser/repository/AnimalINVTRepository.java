@@ -1,11 +1,8 @@
 package com.example.aniamlwaruser.repository;
 
 import com.example.aniamlwaruser.domain.entity.Animal;
-import com.example.aniamlwaruser.domain.entity.Grade;
 import com.example.aniamlwaruser.domain.entity.User;
 import com.example.aniamlwaruser.domain.entity.UserAnimal;
-import com.example.aniamlwaruser.domain.response.AnimalsResponse;
-import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,16 +15,29 @@ public interface AnimalINVTRepository extends JpaRepository<UserAnimal,Long> {
 
     Optional<UserAnimal> findByUserAndAnimal(User userUUID, Animal animalId);
 
+
+    @Query("SELECT A FROM UserAnimal A WHERE A.user.userUUID=:userUUID AND A.animal.animalId=:itemId")
+    Optional<UserAnimal> findByUserAndAnimalId(UUID userUUID, Long itemId);
+
+    @Query("SELECT A FROM UserAnimal A WHERE A.user.userUUID=:userUUID AND A.animal.name=:name AND A.upgrade=:buff")
+    Optional<UserAnimal> findByUserUUIDAndAnimalNameAndBuff(UUID userUUID, String name, int buff);
+
+
     @Query("SELECT a FROM UserAnimal a WHERE a.user.userUUID=:userUUID")
     List<UserAnimal> findUserAnimalByUserUUID(UUID userUUID);
 
     @Query("SELECT ua FROM UserAnimal ua WHERE ua.user.userUUID = :byUserUUID AND ua.animal.animalId = :animal")
-    Optional<UserAnimal> findByInven(UUID byUserUUID, Long animal);
+    UserAnimal findByInven(UUID byUserUUID, Long animal);
+
+    @Query("SELECT A FROM UserAnimal A WHERE A.user.userUUID=:userUUID AND A.animal.animalId=:itemId")
+    Optional<UserAnimal> findByUserUUIDAndAnimal(UUID userUUID, Long itemId);
 
     @Modifying
     @Query("DELETE FROM UserAnimal ua WHERE ua.user.userUUID = :byUserUUID AND ua.animal.animalId = :animal")
     void deleteFindByInven(UUID byUserUUID, Long animal);
 
-    @Query("SELECT ua FROM UserAnimal ua WHERE ua.user.userUUID=:userUUID AND ua.animal.grade = :grade")
-    List<UserAnimal> findAllByGrade(UUID userUUID, Grade grade);
+
+
+//    @Query("SELECT ua FROM UserAnimal ua WHERE ua.user.userUUID=:userUUID AND ua.animal.grade = :grade")
+//    List<UserAnimal> findAllByGrade(UUID userUUID, Grade grade);
 }

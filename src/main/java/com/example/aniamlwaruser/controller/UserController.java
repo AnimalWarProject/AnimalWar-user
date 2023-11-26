@@ -2,8 +2,7 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
-import com.example.aniamlwaruser.domain.request.DrawRequest;
-import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
+import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.service.UserService;
@@ -44,8 +43,6 @@ public class UserController {
         return userService.findUserByNickName(nickName);
     }
 
-
-
     @PostMapping("/update")
     public ResponseEntity<String> updateUser(@RequestHeader String accessToken,
                                              @RequestBody UserUpdateRequest request) {
@@ -56,17 +53,48 @@ public class UserController {
         return ResponseEntity.ok("유저 정보 변경 완료");
     }
 
-
-
     @PostMapping("/terrain")
     public ReTerrainResponse requestTerrain(@AuthenticationPrincipal TokenInfo tokenInfo) {
         UUID userUUID = tokenInfo.getUserUUID();
         return userService.requestTerrain(userUUID);
     }
-    
 
     @PostMapping("/draw") // draw 서비스 돈 차감
-    public void requestUser(@RequestBody DrawRequest request) {
-        userService.requestDraw(request);
+    public void requestUser(@RequestHeader("Authorization") String accessToken, @RequestBody DrawRequest request) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        userService.requestDraw(userUUID, request.count());
     }
+
+    @PostMapping("/price") // market에서 팔린금액 수령
+    public void takePrice(@RequestHeader("Authorization") String accessToken, @RequestBody PriceRequest request) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        userService.takePrice(userUUID, request);
+    }
+
+    @PostMapping("/buyitem") // market구매
+    public void buyItem(@RequestHeader("Authorization") String accessToken, @RequestBody BuyItemRequest request) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        System.out.println("buyAnimal : " + request.getUserId());
+        userService.buyAnimal(userUUID, request);
+    }
+
+    @PostMapping("/cancelitem") // market취소
+    public void cancleItem(@RequestHeader("Authorization") String accessToken, @RequestBody CancelItemRequest request) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        userService.cancelItem(userUUID, request);
+    }
+
+
+    @PostMapping("/upgrade") // 강화서비스
+    public void upGrade(@RequestHeader("Authorization") String accessToken, @RequestBody UpgradeRequest request) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        userService.upGrade(userUUID, request);
+    }
+
+
 }

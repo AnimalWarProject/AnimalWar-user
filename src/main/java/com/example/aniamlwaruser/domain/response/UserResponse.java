@@ -41,6 +41,7 @@ public class UserResponse {
 
     public static UserResponse userResponseBuild(User user) {
         return UserResponse.builder()
+                .uuid(user.getUserUUID())
                 .id(user.getId())
                 .nickName(user.getNickName())
                 .food(user.getFood())
