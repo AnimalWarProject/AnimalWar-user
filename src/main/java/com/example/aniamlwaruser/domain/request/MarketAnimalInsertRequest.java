@@ -9,7 +9,8 @@ public record MarketAnimalInsertRequest(
         String grade,
         String species,
         Integer buff,
-        Integer price
+        Integer price,
+        String imagePath
 
 ) {
 

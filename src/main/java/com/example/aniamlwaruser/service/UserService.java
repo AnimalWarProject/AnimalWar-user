@@ -6,17 +6,17 @@ import com.example.aniamlwaruser.domain.dto.MixRequest;
 import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
 import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
 import com.example.aniamlwaruser.domain.entity.*;
-import com.example.aniamlwaruser.domain.kafka.BuyItemProducer;
-import com.example.aniamlwaruser.domain.kafka.CancelItemProducer;
+import com.example.aniamlwaruser.domain.kafka.*;
 import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.*;
-import com.example.aniamlwaruser.domain.kafka.UpdateTerrainProducer;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,8 @@ public class UserService {
     private final UserBuildingRepository userBuildingRepository;
     private final BuyItemProducer buyItemProducer;
     private final CancelItemProducer cancelItemProducer;
+    private final DeleteItemProducer deleteItemProducer;
+    private final UpgradeProducer upgradeProducer;
 
 
     // 아이디로 회원 정보 조회
@@ -49,7 +51,7 @@ public class UserService {
     }
 
 
-    public UserResponse findUserByUserUUId(UUID userUUID) {
+    public UserResponse findUserByUserUUId(UUID userUUID) { // todo : 무한루프
         User user = userRepository.findByUserUUID(userUUID)
                 .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND USERID: " + userUUID));
 
@@ -121,18 +123,26 @@ public class UserService {
         return new ReTerrainResponse(user.getGold(), user.getSea(), user.getLand(), user.getMountain());
     }
 
-    public void requestDraw(DrawRequest request){
-        User byUserUUID = userRepository.findByUserUUID(request.userUUID()).orElseThrow(()-> new RuntimeException("Not Found User"));
-        int requiredGold = request.count() * 1000;
+    public void requestDraw(UUID userUUID, int count){ // 뽑기 시 돈 차감
+        User byUserUUID = userRepository.findByUserUUID(userUUID).orElseThrow(()-> new RuntimeException("Not Found User"));
+        int requiredGold = count * 1000;
         if (byUserUUID.getGold() >= requiredGold){
             byUserUUID.minusGold(requiredGold);
         }else {
             throw new RuntimeException("Not enough gold");
         }
+        userRepository.save(byUserUUID);
+    }
+
+    public void takePrice(UUID userUUID, PriceRequest request){ // 돈 수령
+        User byUserUUID = userRepository.findByUserUUID(userUUID).orElseThrow(()-> new RuntimeException("Not Found User"));
+        byUserUUID.setGold(byUserUUID.getGold() + request.price());
+        userRepository.save(byUserUUID);
+        CancelBtnRequest cancelBtnRequest = new CancelBtnRequest(userUUID, request.itemId());
+        deleteItemProducer.send(cancelBtnRequest);
     }
 
     public void insertAnimalDrawResponse(List<DrawResponse> result) { // 동물 뽑기 결과 저장
-        System.out.println(result.get(0));
         Map<String, Long> animalCountMap = result.stream()
                 .collect(Collectors.groupingBy(DrawResponse::getName, Collectors.counting()));
 
@@ -203,7 +213,9 @@ public class UserService {
     }
 
 
+    @Transactional
     public void buyAnimal(UUID userUUID, BuyItemRequest request) {
+
         int price = request.getPrice();
         int ownedQuantity = 1; // 새로운 동물의 기본 수량
         int placedQuantity = 0;
@@ -235,8 +247,7 @@ public class UserService {
                     request.getBuff()
             );
 
-            System.out.println("동물 Buy 하는중");
-            
+
             animalINVTRepository.save(insertAnimalRequest.toEntity());
             // kafka 를 통해서 해당 아이템 거래 Btn비활성화 만들어야함.
             BuyBtnRequest buyBtnRequest = new BuyBtnRequest(request.getUserId(), request.getItemId());
@@ -262,8 +273,7 @@ public class UserService {
                     placedQuantity
             );
 
-            System.out.println("건물 Buy 하는중");
-            
+
             buildingINVTRepository.save(insertBuildingRequest.toEntity());
             BuyBtnRequest buyBtnRequest = new BuyBtnRequest(request.getUserId(), request.getItemId());
             buyItemProducer.send(buyBtnRequest);
@@ -322,11 +332,26 @@ public class UserService {
                 buildingINVTRepository.save(buildingRequest.toEntity());
             }
         }
-
         CancelBtnRequest cancelBtnRequest = new CancelBtnRequest(userUUID, request.getItemId());
         cancelItemProducer.send(cancelBtnRequest);
     }
 
+    public void upGrade(UUID userUUID, UpgradeRequest request){ // 강화서비스 요청
+        Optional<UserAnimal> byUserUUIDAndAnimal = animalINVTRepository.findByUserUUIDAndAnimal(userUUID, request.itemId());// 해당 아이템이 존재하는지 확인
+        if (byUserUUIDAndAnimal.isPresent()){
+            UpgradeRequest upgradeRequest = new UpgradeRequest(userUUID, request.itemId(), request.buff());
+            if (byUserUUIDAndAnimal.get().getOwnedQuantity() < 2){
+                UserAnimal userAnimal = byUserUUIDAndAnimal.get();
+                animalINVTRepository.delete(userAnimal);
+            }else {
+                UserAnimal userAnimal = byUserUUIDAndAnimal.get();
+                userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() - 1);
+            }
+            upgradeProducer.send(upgradeRequest);
+        }else {
+            System.out.println("존재하지 않음");
+        }
+    }
 
 
 //    @Transactional
@@ -367,4 +392,5 @@ public class UserService {
 //            userAnimalRepository.deleteAllByUserAnimalIdIn(selectedUserAnimalIds);
 //        }
 //    }
+
 }

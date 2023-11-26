@@ -21,6 +21,7 @@ public class INVTController {
     private final INVTService INVTService;
     private final JwtService jwtService;
 
+
     @GetMapping("/animals") // 동물 인벤토리 불러오기
     public List<AnimalsResponse> getAnimals(@RequestHeader("Authorization") String accessToken){
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
@@ -30,21 +31,28 @@ public class INVTController {
 
     @GetMapping("/buildings") // 건물 인벤토리 불러오기
     public List<BuildingsResponse> getBuildings(@RequestHeader("Authorization") String accessToken){
-
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
         return INVTService.getBuildings(userUUID);
     }
 
-    @PostMapping("/animals")
-    public void insertAnimals(@RequestBody INVTRequest invtRequest){
-        INVTService.insertAnimal(invtRequest);
+    @PostMapping("/myanimal/{itemId}") // 동물 조회
+    public AnimalsResponse getAnimals(@RequestHeader("Authorization") String accessToken,
+                                      @PathVariable("itemId") Long itemId){
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        return INVTService.getAnimal(userUUID, itemId);
     }
 
-    @PostMapping("/buildings")
-    public void insertBuildings(@RequestBody INVTRequest invtRequest){
-        INVTService.insertBuilding(invtRequest);
-    }
+//    @PostMapping("/animals")
+//    public void insertAnimals(@RequestBody INVTRequest invtRequest){
+//        INVTService.insertAnimal(invtRequest);
+//    }
+//
+//    @PostMapping("/buildings")
+//    public void insertBuildings(@RequestBody INVTRequest invtRequest){
+//        INVTService.insertBuilding(invtRequest);
+//    }
 
     @PostMapping("/delete/animal")
     public ResponseEntity<Boolean> deleteAnimalItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteAnimalRequest request){

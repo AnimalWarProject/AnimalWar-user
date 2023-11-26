@@ -13,3 +13,5 @@ public class UserUpdateRequest {
     private String nickName;
     private String profileImage;
 }
+
+
