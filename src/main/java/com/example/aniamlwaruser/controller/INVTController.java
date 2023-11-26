@@ -2,9 +2,7 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
-import com.example.aniamlwaruser.domain.request.DeleteAnimalRequest;
-import com.example.aniamlwaruser.domain.request.DeleteBuildingRequest;
-import com.example.aniamlwaruser.domain.request.INVTRequest;
+import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import com.example.aniamlwaruser.service.INVTService;
@@ -64,4 +62,51 @@ public class INVTController {
         return ResponseEntity.ok(deleted);
     }
 
-}
+    @PostMapping("/updatePlace")
+    public ResponseEntity<Boolean> updateInventoryItems(@RequestHeader("Authorization") String accessToken, @RequestBody UpdateInventoryRequest updateRequest) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+
+        // Update animals
+        for (UpdateItem updateItem : updateRequest.getAnimalItems()) {
+            boolean updated = INVTService.updatePlacedQuantity(userUUID, updateItem);
+            if (!updated) {
+                return ResponseEntity.badRequest().body(false);
+            }
+        }
+        // Update buildings
+        for (UpdateItem updateItem : updateRequest.getBuildingItems()) {
+            boolean updated = INVTService.updatePlacedQuantity(userUUID, updateItem);
+            if (!updated) {
+                return ResponseEntity.badRequest().body(false);
+            }
+        }
+        System.out.println(updateRequest);
+        return ResponseEntity.ok(true);
+    }
+
+
+
+    @PostMapping("/removePlace")
+    public ResponseEntity<Boolean> removePlace(@RequestHeader("Authorization") String accessToken, @RequestBody RemoveInventoryRequest removeRequest) {
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+
+        // 동물 및 건물 아이템 제거 처리
+        for (RemoveItem removeItem : removeRequest.getAnimalItems()) {
+            boolean updated = INVTService.removePlace(userUUID, removeItem);
+            if (!updated) {
+                return ResponseEntity.badRequest().body(false);
+            }
+        }
+        for (RemoveItem removeItem : removeRequest.getBuildingItems()) {
+            boolean updated = INVTService.removePlace(userUUID, removeItem);
+            if (!updated) {
+                return ResponseEntity.badRequest().body(false);
+            }
+        }
+
+        return ResponseEntity.ok(true);
+    }
+
+    }
