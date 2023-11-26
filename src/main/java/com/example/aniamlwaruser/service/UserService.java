@@ -66,6 +66,7 @@ public class UserService {
     }
 
 
+    //마이페이지에서 정보 수정할 때 사용
     public void updateUser(UUID userUUID, UserUpdateRequest request) {
         User existingUser = userRepository.findByUserUUID(userUUID)
                 .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND UUID: " + userUUID));
@@ -85,6 +86,9 @@ public class UserService {
 
         userRepository.save(existingUser);
     }
+    
+
+
 
     public void updateUserTerrainData(TerrainResponseDto terrainResponseDto) {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())

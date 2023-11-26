@@ -167,4 +167,72 @@ public class INVTService {
             qtyFindByInven.setOwnedQuantity(qtyFindByInven.getOwnedQuantity() + 1);
         }
     }
+
+
+    @Transactional
+    public Boolean updatePlacedQuantity(UUID userUUID, UpdateItem updateItem) {
+        EntityType entityType = updateItem.getEntityType();
+        Long itemId = updateItem.getItemId();
+        int newPlacedQuantity = updateItem.getPlacedQuantity();
+
+        if (entityType == EntityType.ANIMAL) {
+            Optional<UserAnimal> userAnimalOpt = animalINVTRepository.findByUserAndAnimalId(userUUID, itemId);
+            if (userAnimalOpt.isPresent()) {
+                UserAnimal userAnimal = userAnimalOpt.get();
+                if(newPlacedQuantity <= userAnimal.getOwnedQuantity()) {
+                    userAnimal.setPlacedQuantity(newPlacedQuantity);
+                }
+            }
+        } else if (entityType == EntityType.BUILDING) {
+            Optional<UserBuilding> userBuildingOpt = buildingINVTRepository.findByUserAndBuildingId(userUUID, itemId);
+            if (userBuildingOpt.isPresent()) {
+                UserBuilding userBuilding = userBuildingOpt.get();
+                if(newPlacedQuantity <= userBuilding.getOwnedQuantity()) {
+                    userBuilding.setPlacedQuantity(newPlacedQuantity);
+                }
+            }
+        }
+
+
+        User user = userRepository.findById(userUUID).orElse(null);
+        if (user != null) {
+            user.calculateTotalRates();
+            user.updateBattleStats();
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean removePlace(UUID userUUID, RemoveItem removeItem) {
+        EntityType entityType = removeItem.getEntityType();
+        Long itemId = removeItem.getItemId();
+        int removeAmount = removeItem.getRemoveQuantity(); // 제거할 양
+
+        if (entityType == EntityType.ANIMAL) {
+            Optional<UserAnimal> userAnimalOpt = animalINVTRepository.findByUserAndAnimalId(userUUID, itemId);
+            if (userAnimalOpt.isPresent()) {
+                UserAnimal userAnimal = userAnimalOpt.get();
+                if (userAnimal.getPlacedQuantity() >= removeAmount) {
+                    userAnimal.setPlacedQuantity(userAnimal.getPlacedQuantity() - removeAmount);
+                }
+            }
+        } else if (entityType == EntityType.BUILDING) {
+            Optional<UserBuilding> userBuildingOpt = buildingINVTRepository.findByUserAndBuildingId(userUUID, itemId);
+            if (userBuildingOpt.isPresent()) {
+                UserBuilding userBuilding = userBuildingOpt.get();
+                if (userBuilding.getPlacedQuantity() >= removeAmount) {
+                    userBuilding.setPlacedQuantity(userBuilding.getPlacedQuantity() - removeAmount);
+                }
+            }
+        }
+
+        User user = userRepository.findById(userUUID).orElse(null);
+        if (user != null) {
+            user.calculateTotalRates();
+            user.updateBattleStats();
+        }
+        return true;
+    }
+
+
 }

@@ -21,7 +21,7 @@ public class UserResponse {
     private int food;
     private int iron;
     private int wood;
-    private int gold; //돈
+    private int gold;
 
     private int attackPower;
     private int defensePower;
