@@ -37,10 +37,6 @@ public class User {
     private int totalWoodRate;
     private int totalIronRate;
 
-    private String attackTypeSkill;
-    private String defenseTypeSkill;
-    private String utilityTypeSkill;
-
     private String profileImage;
 
     @OneToMany(mappedBy = "user")

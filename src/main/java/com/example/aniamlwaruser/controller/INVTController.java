@@ -23,6 +23,7 @@ public class INVTController {
     private final INVTService INVTService;
     private final JwtService jwtService;
 
+
     @GetMapping("/animals") // 동물 인벤토리 불러오기
     public List<AnimalsResponse> getAnimals(@RequestHeader("Authorization") String accessToken){
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
