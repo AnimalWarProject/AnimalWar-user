@@ -1,10 +1,7 @@
 package com.example.aniamlwaruser.service;
 
 
-import com.example.aniamlwaruser.domain.dto.DrawResponse;
-import com.example.aniamlwaruser.domain.dto.MixRequest;
-import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
-import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
+import com.example.aniamlwaruser.domain.dto.*;
 import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.kafka.*;
 import com.example.aniamlwaruser.domain.request.*;
@@ -393,4 +390,14 @@ public class UserService {
 //        }
 //    }
 
+    @Transactional
+    public void userUpdateByGameResult(UserUpdateByGameResultDto resultDto){
+        try {
+            User attacker = userRepository.findByUserUUID(UUID.fromString(resultDto.getAttackerId())).get();
+            attacker.setGold(attacker.getGold() + resultDto.getGold());
+            attacker.setBattlePoint(attacker.getBattlePoint() + resultDto.getBattlePoint());
+        }catch (Exception e){
+            System.out.println("유저 어디있을까?");
+        }
+    }
 }

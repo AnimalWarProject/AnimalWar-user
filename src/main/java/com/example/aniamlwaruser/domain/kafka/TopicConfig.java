@@ -11,6 +11,7 @@ public class TopicConfig {
     public final static String matchTopic = "match";
     public final static String mixResult = "mix";
     public final static String firstTerrain = "first-terrain-request-topic";
+    public final static String GAME_RESULT_TOPIC = "game-result-topic";
     public final static String updateTerrain = "user-terrain-request-topic";
     public final static String insertMarketAnimal = "market-animal";
     public final static String insertMarketBuilding = "market-building";
@@ -22,6 +23,14 @@ public class TopicConfig {
     public NewTopic ownerTopic(){
         return TopicBuilder
                 .name(matchTopic)
+                .replicas(1)
+                .partitions(1)
+                .build();
+    }
+    @Bean
+    public NewTopic GAME_RESULT_TOPIC(){
+        return TopicBuilder
+                .name(GAME_RESULT_TOPIC)
                 .replicas(1)
                 .partitions(1)
                 .build();
