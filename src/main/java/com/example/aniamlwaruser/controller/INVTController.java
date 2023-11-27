@@ -2,9 +2,6 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
-import com.example.aniamlwaruser.domain.entity.Grade;
-import com.example.aniamlwaruser.domain.entity.UserAnimal;
-import com.example.aniamlwaruser.domain.entity.UserBuilding;
 import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
@@ -46,7 +43,6 @@ public class INVTController {
         UUID userUUID = tokenInfo.getUserUUID();
         return INVTService.getAnimal(userUUID, itemId);
     }
-
 
     @PostMapping("/delete/animal")
     public ResponseEntity<Boolean> deleteAnimalItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteAnimalRequest request){
