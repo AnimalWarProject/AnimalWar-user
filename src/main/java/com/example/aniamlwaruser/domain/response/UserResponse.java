@@ -21,7 +21,7 @@ public class UserResponse {
     private int food;
     private int iron;
     private int wood;
-    private int gold; //돈
+    private int gold;
 
     private int attackPower;
     private int defensePower;
@@ -37,6 +37,9 @@ public class UserResponse {
     private int sea;
     private int land;
     private int mountain;
+    private int totalFoodRate;
+    private int totalWoodRate;
+    private int totalIronRate;
 
 
     public static UserResponse userResponseBuild(User user) {
@@ -58,6 +61,9 @@ public class UserResponse {
                 .profileImage(user.getProfileImage())
                 .species(user.getSpecies())
                 .landForm(user.getLandForm())
+                .totalFoodRate(user.getTotalFoodRate())
+                .totalIronRate(user.getTotalIronRate())
+                .totalWoodRate(user.getTotalWoodRate())
                 .build();
     }
 }

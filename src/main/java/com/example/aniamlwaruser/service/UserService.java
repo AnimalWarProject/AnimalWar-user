@@ -1,10 +1,7 @@
 package com.example.aniamlwaruser.service;
 
 
-import com.example.aniamlwaruser.domain.dto.DrawResponse;
-import com.example.aniamlwaruser.domain.dto.MixRequest;
-import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
-import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
+import com.example.aniamlwaruser.domain.dto.*;
 import com.example.aniamlwaruser.domain.entity.*;
 import com.example.aniamlwaruser.domain.kafka.*;
 import com.example.aniamlwaruser.domain.request.*;
@@ -16,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +32,6 @@ public class UserService {
     private final BuildingINVTRepository buildingINVTRepository;
     private final UpdateTerrainProducer updateTerrainProducer;
     private final UserAnimalRepository userAnimalRepository;
-    private final UserBuildingRepository userBuildingRepository;
     private final BuyItemProducer buyItemProducer;
     private final CancelItemProducer cancelItemProducer;
     private final DeleteItemProducer deleteItemProducer;
@@ -64,6 +61,7 @@ public class UserService {
     }
 
 
+    //마이페이지에서 정보 수정할 때 사용
     public void updateUser(UUID userUUID, UserUpdateRequest request) {
         User existingUser = userRepository.findByUserUUID(userUUID)
                 .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND UUID: " + userUUID));
@@ -83,6 +81,9 @@ public class UserService {
 
         userRepository.save(existingUser);
     }
+    
+
+
 
     public void updateUserTerrainData(TerrainResponseDto terrainResponseDto) {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())
@@ -353,25 +354,75 @@ public class UserService {
         }
     }
 
-    public void saveInventory(MixRequest mixRequest) {
-        User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+//    public void saveInventory(MixRequest mixRequest) {
+//        User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        Animal animal = animalRepository.findById(mixRequest.getAnimalId())
+//                .orElseThrow(() -> new RuntimeException("Animal not found"));
+//
+//        UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
+//                .orElseGet(() -> UserAnimal.builder()
+//                        .user(user)
+//                        .animal(animal)
+//                        .ownedQuantity(0) // If not present, start with zero
+//                        .placedQuantity(0) // Assume new animal is not placed
+//                        .upgrade(0) // Assume upgrades start at 0 for new animal
+//                        .build());
+//
+//        userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
+//
+//        userAnimalRepository.save(userAnimal);
+//    }
 
-        Animal animal = animalRepository.findById(mixRequest.getAnimalId())
-                .orElseThrow(() -> new RuntimeException("Animal not found"));
 
-        UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
-                .orElseGet(() -> UserAnimal.builder()
-                        .user(user)
-                        .animal(animal)
-                        .ownedQuantity(0) // If not present, start with zero
-                        .placedQuantity(0) // Assume new animal is not placed
-                        .upgrade(0) // Assume upgrades start at 0 for new animal
-                        .build());
+//    @Transactional
+//    public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
+//        // saveInventory 실행
+//        saveInventory(mixRequest);
+//        // deleteMixed 실행
+//        deleteMixed(mixRequest.getUserAnimalList());
+//    }
 
-        userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
+//    public void saveInventory(MixRequest mixRequest) {
+//        User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        Animal animal = animalRepository.findById(mixRequest.getAnimalId())
+//                .orElseThrow(() -> new RuntimeException("Animal not found"));
+//
+//        // Check if the animal already exists in the user's inventory
+//        UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
+//                .orElseGet(() -> UserAnimal.builder()
+//                        .user(user)
+//                        .animal(animal)
+//                        .ownedQuantity(0) // If not present, start with zero
+//                        .placedQuantity(0) // Assume new animal is not placed
+//                        .upgrade(0) // Assume upgrades start at 0 for new animal
+//                        .build());
+//
+//        // Update owned quantity
+//        userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
+//
+//        // Save the updated/ new user animal
+//        userAnimalRepository.save(userAnimal);
+//    }
 
-        userAnimalRepository.save(userAnimal);
+//    public void deleteMixed(List<Long> selectedUserAnimalIds) {
+//        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
+//            // Batch delete by IDs to improve performance
+//            userAnimalRepository.deleteAllByUserAnimalIdIn(selectedUserAnimalIds);
+//        }
+//    }
+
+    @Transactional
+    public void userUpdateByGameResult(UserUpdateByGameResultDto resultDto){
+        try {
+            User attacker = userRepository.findByUserUUID(UUID.fromString(resultDto.getAttackerId())).get();
+            attacker.setGold(attacker.getGold() + resultDto.getGold());
+            attacker.setBattlePoint(attacker.getBattlePoint() + resultDto.getBattlePoint());
+        }catch (Exception e){
+            System.out.println("유저 어디있을까?");
+        }
     }
-
 }
