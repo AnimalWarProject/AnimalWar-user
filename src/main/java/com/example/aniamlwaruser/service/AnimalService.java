@@ -777,8 +777,6 @@ public class AnimalService {
                     UserAnimal.builder().user(user).animal(animal12).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
                     UserAnimal.builder().user(user).animal(animal13).ownedQuantity(1).placedQuantity(1).upgrade(1).build(),
                     UserAnimal.builder().user(user).animal(animal14).ownedQuantity(1).placedQuantity(1).upgrade(1).build()
-
-
             ));
         }
 

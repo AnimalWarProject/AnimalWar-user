@@ -89,9 +89,7 @@ public class BuildingService {
         userRepository.save(user);
 
         Building building = buildingRepository.findById(1L).get();
-        System.out.println("---------------------------------"+building.getBuildingId());
         Building building2 = buildingRepository.findById(13L).get();
-        System.out.println("---------------------------------"+building2.getBuildingId());
         Building building3 = buildingRepository.findById(22L).get();
         Building building6 = buildingRepository.findById(23L).get();
         Building building7 = buildingRepository.findById(24L).get();
