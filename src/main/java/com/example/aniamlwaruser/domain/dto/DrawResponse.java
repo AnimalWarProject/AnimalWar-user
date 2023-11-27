@@ -12,6 +12,5 @@ public class DrawResponse {
     private UUID userUUID;
 
     public DrawResponse() {
-        // 기본 생성자
     }
 }

@@ -17,14 +17,12 @@ public class DrawResultConsumer {
 
     @KafkaListener(topics = "resultAnimalDraw", groupId = "Terrain")
     public void animalConsume(List<DrawResponse> result) throws IOException {
-        System.out.println("동물 consumer : "+result);
         userService.insertAnimalDrawResponse(result);
 
     }
 
     @KafkaListener(topics = "resultBuildingDraw", groupId = "Terrain")
     public void buildingConsume(List<DrawResponse> result) throws IOException {
-        System.out.println("건물 consumer : "+result);
         userService.insertBuildingDrawResponse(result);
 
     }

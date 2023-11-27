@@ -45,16 +45,6 @@ public class INVTController {
         return INVTService.getAnimal(userUUID, itemId);
     }
 
-//    @PostMapping("/animals")
-//    public void insertAnimals(@RequestBody INVTRequest invtRequest){
-//        INVTService.insertAnimal(invtRequest);
-//    }
-//
-//    @PostMapping("/buildings")
-//    public void insertBuildings(@RequestBody INVTRequest invtRequest){
-//        INVTService.insertBuilding(invtRequest);
-//    }
-
     @PostMapping("/delete/animal")
     public ResponseEntity<Boolean> deleteAnimalItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteAnimalRequest request){
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));

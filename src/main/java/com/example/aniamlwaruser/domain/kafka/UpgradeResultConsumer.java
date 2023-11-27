@@ -16,7 +16,6 @@ public class UpgradeResultConsumer {
 
     @KafkaListener(topics = "resultUpgrade", groupId = "Terrain")
     public void consume(UpgradeRequest result) throws IOException {
-        System.out.println("Consumer : " + result.userUUID() + " " + result.itemId() + " " + result.buff());
         invtService.updateUpgrade(result);
     }
 

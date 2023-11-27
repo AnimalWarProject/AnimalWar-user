@@ -48,7 +48,6 @@ public class UserController {
                                              @RequestBody UserUpdateRequest request) {
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-
         userService.updateUser(userUUID, request);
         return ResponseEntity.ok("유저 정보 변경 완료");
     }
@@ -77,7 +76,6 @@ public class UserController {
     public void buyItem(@RequestHeader("Authorization") String accessToken, @RequestBody BuyItemRequest request) {
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-        System.out.println("buyAnimal : " + request.getUserId());
         userService.buyAnimal(userUUID, request);
     }
 

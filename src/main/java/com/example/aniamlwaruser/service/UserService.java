@@ -38,7 +38,6 @@ public class UserService {
     private final BuyItemProducer buyItemProducer;
     private final CancelItemProducer cancelItemProducer;
     private final DeleteItemProducer deleteItemProducer;
-    private final UpgradeProducer upgradeProducer;
 
 
     // 아이디로 회원 정보 조회
@@ -331,31 +330,28 @@ public class UserService {
         cancelItemProducer.send(cancelBtnRequest);
     }
 
-    public void upGrade(UUID userUUID, UpgradeRequest request){ // 강화서비스 요청
-        Optional<UserAnimal> byUserUUIDAndAnimal = animalINVTRepository.findByUserUUIDAndAnimal(userUUID, request.itemId());// 해당 아이템이 존재하는지 확인
-        if (byUserUUIDAndAnimal.isPresent()){
-            UpgradeRequest upgradeRequest = new UpgradeRequest(userUUID, request.itemId(), request.buff());
-            if (byUserUUIDAndAnimal.get().getOwnedQuantity() < 2){
-                UserAnimal userAnimal = byUserUUIDAndAnimal.get();
-                animalINVTRepository.delete(userAnimal);
-            }else {
-                UserAnimal userAnimal = byUserUUIDAndAnimal.get();
-                userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() - 1);
+    public void upGrade(UUID userUUID, UpgradeRequest request){ // 강화서비스 비용
+        int upgradePrice = 1000; // 강화비용
+        Optional<User> byUserUUID = userRepository.findByUserUUID(userUUID);
+        Optional<UserAnimal> byUserUUIDAndAnimal = animalINVTRepository.findByUserUUIDAndAnimal(userUUID, request.itemId(), request.buff());
+        if (byUserUUID.isPresent()){
+            User user = byUserUUID.get();
+            user.setGold(user.getGold() - request.buff() * upgradePrice);
+            userRepository.save(user);
+            if (byUserUUIDAndAnimal.isPresent()){
+                if (byUserUUIDAndAnimal.get().getOwnedQuantity() > 1){ // 1개이상있으면 -1 아니면 삭제
+                    UserAnimal userAnimal = byUserUUIDAndAnimal.get();
+                    userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() - 1);
+                    animalINVTRepository.save(userAnimal);
+                }else {
+                    UserAnimal userAnimal = byUserUUIDAndAnimal.get();
+                    animalINVTRepository.delete(userAnimal);
+                }
             }
-            upgradeProducer.send(upgradeRequest);
         }else {
-            System.out.println("존재하지 않음");
+            System.out.println("없는 유저");
         }
     }
-
-
-//    @Transactional
-//    public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
-//        // saveInventory 실행
-//        saveInventory(mixRequest);
-//        // deleteMixed 실행
-//        deleteMixed(mixRequest.getUserAnimalList());
-//    }
 
     public void saveInventory(MixRequest mixRequest) {
         User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
@@ -364,7 +360,6 @@ public class UserService {
         Animal animal = animalRepository.findById(mixRequest.getAnimalId())
                 .orElseThrow(() -> new RuntimeException("Animal not found"));
 
-        // Check if the animal already exists in the user's inventory
         UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
                 .orElseGet(() -> UserAnimal.builder()
                         .user(user)
@@ -374,17 +369,9 @@ public class UserService {
                         .upgrade(0) // Assume upgrades start at 0 for new animal
                         .build());
 
-        // Update owned quantity
         userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
 
-        // Save the updated/ new user animal
         userAnimalRepository.save(userAnimal);
     }
 
-//    public void deleteMixed(List<Long> selectedUserAnimalIds) {
-//        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
-//            // Batch delete by IDs to improve performance
-//            userAnimalRepository.deleteAllByUserAnimalIdIn(selectedUserAnimalIds);
-//        }
-//    }
 }
