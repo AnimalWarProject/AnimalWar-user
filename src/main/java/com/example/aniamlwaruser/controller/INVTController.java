@@ -2,15 +2,10 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
-
 import com.example.aniamlwaruser.domain.entity.Grade;
 import com.example.aniamlwaruser.domain.entity.UserAnimal;
 import com.example.aniamlwaruser.domain.entity.UserBuilding;
-
-import com.example.aniamlwaruser.domain.request.DeleteAnimalRequest;
-import com.example.aniamlwaruser.domain.request.DeleteBuildingRequest;
-
-import com.example.aniamlwaruser.domain.request.INVTRequest;
+import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
 import com.example.aniamlwaruser.service.INVTService;
@@ -29,6 +24,7 @@ public class INVTController {
     private final INVTService INVTService;
     private final JwtService jwtService;
 
+
     @GetMapping("/animals") // 동물 인벤토리 불러오기
     public List<AnimalsResponse> getAnimals(@RequestHeader("Authorization") String accessToken){
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
@@ -38,21 +34,19 @@ public class INVTController {
 
     @GetMapping("/buildings") // 건물 인벤토리 불러오기
     public List<BuildingsResponse> getBuildings(@RequestHeader("Authorization") String accessToken){
-
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
         return INVTService.getBuildings(userUUID);
     }
 
-    @PostMapping("/animals")
-    public void insertAnimals(@RequestBody INVTRequest invtRequest){
-        INVTService.insertAnimal(invtRequest);
+    @PostMapping("/myanimal/{itemId}") // 동물 조회
+    public AnimalsResponse getAnimals(@RequestHeader("Authorization") String accessToken,
+                                      @PathVariable("itemId") Long itemId){
+        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+        UUID userUUID = tokenInfo.getUserUUID();
+        return INVTService.getAnimal(userUUID, itemId);
     }
 
-    @PostMapping("/buildings")
-    public void insertBuildings(@RequestBody INVTRequest invtRequest){
-        INVTService.insertBuilding(invtRequest);
-    }
 
     @PostMapping("/delete/animal")
     public ResponseEntity<Boolean> deleteAnimalItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteAnimalRequest request){
@@ -70,29 +64,69 @@ public class INVTController {
         return ResponseEntity.ok(deleted);
     }
 
-    @GetMapping("/animals/{grade}")
-    public List<UserAnimal> findAnimalByGrade(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
+    @PostMapping("/updatePlace")
+    public ResponseEntity<Boolean> updateInventoryItems(@RequestHeader("Authorization") String accessToken, @RequestBody UpdateInventoryRequest updateRequest) {
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-        List<UserAnimal> allByGrade = INVTService.findAllByGrade(userUUID, Grade.valueOf(grade));
-        return allByGrade;
+
+        // Update animals
+        for (UpdateItem updateItem : updateRequest.getAnimalItems()) {
+            boolean updated = INVTService.updatePlacedQuantity(userUUID, updateItem);
+            if (!updated) {
+                return ResponseEntity.badRequest().body(false);
+            }
+        }
+        // Update buildings
+        for (UpdateItem updateItem : updateRequest.getBuildingItems()) {
+            boolean updated = INVTService.updatePlacedQuantity(userUUID, updateItem);
+            if (!updated) {
+                return ResponseEntity.badRequest().body(false);
+            }
+        }
+        System.out.println(updateRequest);
+        return ResponseEntity.ok(true);
     }
 
-    @GetMapping("/buildings/{grade}")
-    public List<UserBuilding> findBuildingByGrade(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
+
+
+    @PostMapping("/removePlace")
+    public ResponseEntity<Boolean> removePlace(@RequestHeader("Authorization") String accessToken, @RequestBody RemoveInventoryRequest removeRequest) {
         TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
         UUID userUUID = tokenInfo.getUserUUID();
-        List<UserBuilding> allByGrade = INVTService.findBuildingByGrade(userUUID, Grade.valueOf(grade));
-        return allByGrade;
+
+        // 동물 및 건물 아이템 제거 처리
+        for (RemoveItem removeItem : removeRequest.getAnimalItems()) {
+            boolean updated = INVTService.removePlace(userUUID, removeItem);
+            if (!updated) {
+                return ResponseEntity.badRequest().body(false);
+            }
+        }
+        for (RemoveItem removeItem : removeRequest.getBuildingItems()) {
+            boolean updated = INVTService.removePlace(userUUID, removeItem);
+            if (!updated) {
+                return ResponseEntity.badRequest().body(false);
+            }
+        }
+
+        return ResponseEntity.ok(true);
     }
 
+//    @GetMapping("/animals")
+//    public ResponseEntity<List<AnimalsResponse>> findAllAnimals(@RequestHeader("Authorization") String accessToken) {
+//        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+//        UUID userUUID = tokenInfo.getUserUUID();
+//        List<AnimalsResponse> animals = INVTService.findAllAnimals(userUUID);
+//        return ResponseEntity.ok(animals);
+//    }
+//
+//    // 건물 데이터 반환
+//    @GetMapping("/buildings")
+//    public ResponseEntity<List<BuildingsResponse>> findAllBuildings(@RequestHeader("Authorization") String accessToken) {
+//        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+//        UUID userUUID = tokenInfo.getUserUUID();
+//        List<BuildingsResponse> buildings = INVTService.findAllBuildings(userUUID);
+//        return ResponseEntity.ok(buildings);
+//    }
 
-    @GetMapping("/grade")
-    public List<UserAnimal> findAnimalByGrade2(@RequestHeader("Authorization") String accessToken, @RequestParam(name = "grade") String grade) {
-        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
-        UUID userUUID = tokenInfo.getUserUUID();
-        List<UserAnimal> allByGrade = INVTService.findAllByGrade(userUUID, Grade.valueOf(grade));
-        return allByGrade;
-    }
 
 }

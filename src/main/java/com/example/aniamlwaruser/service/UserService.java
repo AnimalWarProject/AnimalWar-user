@@ -1,22 +1,19 @@
 package com.example.aniamlwaruser.service;
 
 
-import com.example.aniamlwaruser.domain.dto.DrawResponse;
-import com.example.aniamlwaruser.domain.dto.MixRequest;
-import com.example.aniamlwaruser.domain.dto.TerrainRequestDto;
-import com.example.aniamlwaruser.domain.dto.TerrainResponseDto;
+import com.example.aniamlwaruser.domain.dto.*;
 import com.example.aniamlwaruser.domain.entity.*;
-import com.example.aniamlwaruser.domain.request.DrawRequest;
-import com.example.aniamlwaruser.domain.request.UserUpdateRequest;
+import com.example.aniamlwaruser.domain.kafka.*;
+import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.ReTerrainResponse;
 import com.example.aniamlwaruser.domain.response.UserResponse;
 import com.example.aniamlwaruser.repository.*;
-import com.example.aniamlwaruser.domain.kafka.UpdateTerrainProducer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +32,10 @@ public class UserService {
     private final BuildingINVTRepository buildingINVTRepository;
     private final UpdateTerrainProducer updateTerrainProducer;
     private final UserAnimalRepository userAnimalRepository;
-    private final UserBuildingRepository userBuildingRepository;
+    private final BuyItemProducer buyItemProducer;
+    private final CancelItemProducer cancelItemProducer;
+    private final DeleteItemProducer deleteItemProducer;
+    private final UpgradeProducer upgradeProducer;
 
 
     // 아이디로 회원 정보 조회
@@ -47,7 +47,7 @@ public class UserService {
     }
 
 
-    public UserResponse findUserByUserUUId(UUID userUUID) {
+    public UserResponse findUserByUserUUId(UUID userUUID) { // todo : 무한루프
         User user = userRepository.findByUserUUID(userUUID)
                 .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND USERID: " + userUUID));
 
@@ -62,6 +62,7 @@ public class UserService {
     }
 
 
+    //마이페이지에서 정보 수정할 때 사용
     public void updateUser(UUID userUUID, UserUpdateRequest request) {
         User existingUser = userRepository.findByUserUUID(userUUID)
                 .orElseThrow(() -> new IllegalArgumentException("USER NOT FOUND UUID: " + userUUID));
@@ -81,6 +82,9 @@ public class UserService {
 
         userRepository.save(existingUser);
     }
+
+
+
 
     public void updateUserTerrainData(TerrainResponseDto terrainResponseDto) {
         User user = userRepository.findByUserUUID(terrainResponseDto.getUserUUID())
@@ -115,18 +119,26 @@ public class UserService {
         return new ReTerrainResponse(user.getGold(), user.getSea(), user.getLand(), user.getMountain());
     }
 
-    public void requestDraw(DrawRequest request){
-        User byUserUUID = userRepository.findByUserUUID(request.userUUID()).orElseThrow(()-> new RuntimeException("Not Found User"));
-        int requiredGold = request.count() * 1000;
+    public void requestDraw(UUID userUUID, int count){ // 뽑기 시 돈 차감
+        User byUserUUID = userRepository.findByUserUUID(userUUID).orElseThrow(()-> new RuntimeException("Not Found User"));
+        int requiredGold = count * 1000;
         if (byUserUUID.getGold() >= requiredGold){
             byUserUUID.minusGold(requiredGold);
         }else {
             throw new RuntimeException("Not enough gold");
         }
+        userRepository.save(byUserUUID);
+    }
+
+    public void takePrice(UUID userUUID, PriceRequest request){ // 돈 수령
+        User byUserUUID = userRepository.findByUserUUID(userUUID).orElseThrow(()-> new RuntimeException("Not Found User"));
+        byUserUUID.setGold(byUserUUID.getGold() + request.price());
+        userRepository.save(byUserUUID);
+        CancelBtnRequest cancelBtnRequest = new CancelBtnRequest(userUUID, request.itemId());
+        deleteItemProducer.send(cancelBtnRequest);
     }
 
     public void insertAnimalDrawResponse(List<DrawResponse> result) { // 동물 뽑기 결과 저장
-        System.out.println(result.get(0));
         Map<String, Long> animalCountMap = result.stream()
                 .collect(Collectors.groupingBy(DrawResponse::getName, Collectors.counting()));
 
@@ -198,90 +210,154 @@ public class UserService {
 
 
     @Transactional
-    public void saveInventoryAndDeleteMixed(MixRequest mixRequest) {
-        if(mixRequest.getEntityType() == EntityType.ANIMAL) { // 동물 합성일 때
-            System.out.println("mixRequestSSSSSSSAAAAAAAAAAVVVVVVVEEEEEEEEEE  ANIMAL  "+mixRequest);
-            saveAnimalInventory(mixRequest); // 합성 결과 저장 실행
-            deleteMixedAnimal(mixRequest.getSelectedList()); // 인벤토리 삭제 실행
-        } else { // 건물 합성일 떄
-            System.out.println("mixRequestSSSSSSSAAAAAAAAAAVVVVVVVEEEEEEEEEE BUILDING "+mixRequest);
-            saveBuildingInventory(mixRequest);
-            deleteMixedBuilding(mixRequest.getSelectedList());
+    public void buyAnimal(UUID userUUID, BuyItemRequest request) {
+
+        int price = request.getPrice();
+        int ownedQuantity = 1; // 새로운 동물의 기본 수량
+        int placedQuantity = 0;
+        User user = userRepository.findByUserUUID(userUUID)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        // 동물인지 건물인지 확인.
+        Optional<Animal> animalByName = animalRepository.findByName(request.getName());
+        Optional<Building> buildingByName = buildingRepository.findByName(request.getName());
+
+        if (animalByName.isPresent()){
+            Optional<UserAnimal> existingAnimal = // 해당 동물이 인벤토리에 중복되는지 검사.
+                    animalINVTRepository.findByUserUUIDAndAnimalNameAndBuff(userUUID, request.getName(), request.getBuff());
+
+            if (existingAnimal.isPresent()) {
+                UserAnimal animal = existingAnimal.get();
+                ownedQuantity = animal.getOwnedQuantity() + 1; // 있으면 수량만 +1
+                placedQuantity = animal.getPlacedQuantity();
+            }
+            // 사용자의 골드에서 돈 차감
+            user.setGold(user.getGold() - price);
+
+            // 새로운 동물 정보 생성 및 저장
+            InsertAnimalRequest insertAnimalRequest = new InsertAnimalRequest(
+                    userUUID,
+                    request.getItemId(),
+                    ownedQuantity,
+                    placedQuantity,
+                    request.getBuff()
+            );
+
+
+            animalINVTRepository.save(insertAnimalRequest.toEntity());
+            // kafka 를 통해서 해당 아이템 거래 Btn비활성화 만들어야함.
+            BuyBtnRequest buyBtnRequest = new BuyBtnRequest(request.getUserId(), request.getItemId());
+            buyItemProducer.send(buyBtnRequest);
+
+        }else if (buildingByName.isPresent()){
+            Optional<UserBuilding> byUserUUIDAndBuildingNameAndType =
+                    buildingINVTRepository.findByUserUUIDAndBuildingNameAndType(userUUID, request.getName(), request.getType());
+
+            if (byUserUUIDAndBuildingNameAndType.isPresent()) {
+                UserBuilding building = byUserUUIDAndBuildingNameAndType.get();
+                ownedQuantity = building.getOwnedQuantity() + 1; // 있으면 수량만 +1
+                placedQuantity = building.getPlacedQuantity();
+            }
+            // 사용자의 골드에서 돈 차감
+            user.setGold(user.getGold() - price);
+
+            // 새로운 동물 정보 생성 및 저장
+            InsertBuildingRequest insertBuildingRequest = new InsertBuildingRequest(
+                    userUUID,
+                    request.getItemId(),
+                    ownedQuantity,
+                    placedQuantity
+            );
+
+
+            buildingINVTRepository.save(insertBuildingRequest.toEntity());
+            BuyBtnRequest buyBtnRequest = new BuyBtnRequest(request.getUserId(), request.getItemId());
+            buyItemProducer.send(buyBtnRequest);
         }
     }
 
-    public void saveAnimalInventory(MixRequest mixRequest) {
-            User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+    public void cancelItem(UUID userUUID, CancelItemRequest request){
+        // 동물인지 건물인지 확인.
+        Optional<Animal> animalByName = animalRepository.findByName(request.getName());
+        Optional<Building> buildingByName = buildingRepository.findByName(request.getName());
 
-            Animal animal = animalRepository.findById(mixRequest.getMixResultId())
-                    .orElseThrow(() -> new RuntimeException("Animal not found"));
+        if (animalByName.isPresent()){
+            Optional<UserAnimal> byUserUUIDAndAnimalNameAndBuff =
+                    animalINVTRepository.findByUserUUIDAndAnimalNameAndBuff(userUUID, request.getName(), request.getBuff());
 
-        // Check if the animal already exists in the user's inventory
-            UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
-                    .orElseGet(() -> UserAnimal.builder() // 없던 동물이라면
-                            .user(user)
-                            .animal(animal)
-                            .ownedQuantity(0)
-                            .placedQuantity(0)
-                            .upgrade(0)
-                            .build());
+            if (byUserUUIDAndAnimalNameAndBuff.isPresent()){
+                UserAnimal userAnimal = byUserUUIDAndAnimalNameAndBuff.get();
+                InsertAnimalRequest animalRequest = new InsertAnimalRequest(
+                        userUUID,
+                        request.getItemId(),
+                        userAnimal.getOwnedQuantity()+1,
+                        userAnimal.getPlacedQuantity(),
+                        request.getBuff()
+                );
+                animalINVTRepository.save(animalRequest.toEntity());
+            }else {
+                InsertAnimalRequest animalRequest = new InsertAnimalRequest(
+                        userUUID,
+                        request.getItemId(),
+                        1,
+                        0,
+                        request.getBuff()
+                );
+                animalINVTRepository.save(animalRequest.toEntity());
+            }
+        }else if (buildingByName.isPresent()){
+            Optional<UserBuilding> byUserUUIDAndBuildingNameAndType =
+                    buildingINVTRepository.findByUserUUIDAndBuildingNameAndType(userUUID, request.getName(), request.getType());
 
-            // Update owned quantity
-            userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1); // 원래 가지고 있던 동물이라면 getOwnedQuantity +1
-
-            // Save the updated/ new user animal
-            userAnimalRepository.save(userAnimal);
+            if (byUserUUIDAndBuildingNameAndType.isPresent()){
+                UserBuilding userBuilding = byUserUUIDAndBuildingNameAndType.get();
+                InsertBuildingRequest buildingRequest = new InsertBuildingRequest(
+                        userUUID,
+                        request.getItemId(),
+                        userBuilding.getOwnedQuantity()+1,
+                        userBuilding.getPlacedQuantity()
+                );
+                buildingINVTRepository.save(buildingRequest.toEntity());
+            }else {
+                InsertBuildingRequest buildingRequest = new InsertBuildingRequest(
+                        userUUID,
+                        request.getItemId(),
+                        1,
+                        0
+                );
+                buildingINVTRepository.save(buildingRequest.toEntity());
+            }
+        }
+        CancelBtnRequest cancelBtnRequest = new CancelBtnRequest(userUUID, request.getItemId());
+        cancelItemProducer.send(cancelBtnRequest);
     }
 
-    public void saveBuildingInventory(MixRequest mixRequest) {
-        // 건물 합성 결과 넣기
-            User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            Building building = buildingRepository.findById(mixRequest.getMixResultId())
-                    .orElseThrow(() -> new RuntimeException("Animal not found"));
-
-            // Check if the animal already exists in the user's inventory
-            UserBuilding userBuilding = userBuildingRepository.findByUserAndBuilding(user, building)
-                    .orElseGet(() -> UserBuilding.builder()
-                            .user(user)
-                            .building(building)
-                            .ownedQuantity(1) // If not present, start with zero
-                            .placedQuantity(0) // Assume new animal is not placed  TODO 이미 가지고 있는 동물이라면?
-                            .build());
-
-            // Update owned quantity
-            userBuilding.setOwnedQuantity(userBuilding.getOwnedQuantity() + 1);
-
-            // Save the updated/ new user animal
-            userBuildingRepository.save(userBuilding);
+    public void upGrade(UUID userUUID, UpgradeRequest request){ // 강화서비스 요청
+        Optional<UserAnimal> byUserUUIDAndAnimal = animalINVTRepository.findByUserUUIDAndAnimal(userUUID, request.itemId());// 해당 아이템이 존재하는지 확인
+        if (byUserUUIDAndAnimal.isPresent()){
+            UpgradeRequest upgradeRequest = new UpgradeRequest(userUUID, request.itemId(), request.buff());
+            if (byUserUUIDAndAnimal.get().getOwnedQuantity() < 2){
+                UserAnimal userAnimal = byUserUUIDAndAnimal.get();
+                animalINVTRepository.delete(userAnimal);
+            }else {
+                UserAnimal userAnimal = byUserUUIDAndAnimal.get();
+                userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() - 1);
+            }
+            upgradeProducer.send(upgradeRequest);
+        }else {
+            System.out.println("존재하지 않음");
+        }
     }
+
 
     @Transactional
-    public void deleteMixedAnimal(List<Long> selectedUserAnimalIds) {
-        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
-            for (long animalId: selectedUserAnimalIds) {
-                UserAnimal userAnimal = userAnimalRepository.findByAnimal_AnimalId(animalId).orElseThrow(() -> new RuntimeException("NOT FOUND ANIMAL ID"));
-                if (userAnimal.getOwnedQuantity() > 1) {
-                    userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() -1);
-                } else {
-                    userAnimalRepository.deleteById(userAnimal.getId()); // count가 1개인걸 선택하면 무조건 삭제이기 떄문에 위에서 for문 돌려준거 바로 삭제
-                }
-            }
-        }
-    }
-
-    public void deleteMixedBuilding(List<Long> selectedUserBuildingIds) {
-        if (selectedUserBuildingIds != null && !selectedUserBuildingIds.isEmpty()) {
-            for (long buildingId : selectedUserBuildingIds) {
-                UserBuilding userBuilding = userBuildingRepository.findByBuilding_BuildingId(buildingId).orElseThrow(() -> new RuntimeException("NOT FOUND BUILDING ID"));
-                if(userBuilding.getOwnedQuantity() > 1) {
-                    userBuilding.setOwnedQuantity(userBuilding.getOwnedQuantity() -1);
-                } else {
-                    userBuildingRepository.deleteById(userBuilding.getId());
-                }
-            }
+    public void userUpdateByGameResult(UserUpdateByGameResultDto resultDto){
+        try {
+            User attacker = userRepository.findByUserUUID(UUID.fromString(resultDto.getAttackerId())).get();
+            attacker.setGold(attacker.getGold() + resultDto.getGold());
+            attacker.setBattlePoint(attacker.getBattlePoint() + resultDto.getBattlePoint());
+        }catch (Exception e){
+            System.out.println("유저 어디있을까?");
         }
     }
 }

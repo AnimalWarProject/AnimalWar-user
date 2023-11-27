@@ -15,10 +15,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MixRequest {
-//    private Long id;
     private UUID userUUID;
-//    private String userId;
-//    private String nickName;
+
     private EntityType entityType;
     private Long mixResultId;
     private String name;
