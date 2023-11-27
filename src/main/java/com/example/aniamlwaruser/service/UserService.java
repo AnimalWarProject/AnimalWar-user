@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +32,6 @@ public class UserService {
     private final BuildingINVTRepository buildingINVTRepository;
     private final UpdateTerrainProducer updateTerrainProducer;
     private final UserAnimalRepository userAnimalRepository;
-    private final UserBuildingRepository userBuildingRepository;
     private final BuyItemProducer buyItemProducer;
     private final CancelItemProducer cancelItemProducer;
     private final DeleteItemProducer deleteItemProducer;
@@ -359,29 +358,29 @@ public class UserService {
 //        deleteMixed(mixRequest.getUserAnimalList());
 //    }
 
-    public void saveInventory(MixRequest mixRequest) {
-        User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Animal animal = animalRepository.findById(mixRequest.getAnimalId())
-                .orElseThrow(() -> new RuntimeException("Animal not found"));
-
-        // Check if the animal already exists in the user's inventory
-        UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
-                .orElseGet(() -> UserAnimal.builder()
-                        .user(user)
-                        .animal(animal)
-                        .ownedQuantity(0) // If not present, start with zero
-                        .placedQuantity(0) // Assume new animal is not placed
-                        .upgrade(0) // Assume upgrades start at 0 for new animal
-                        .build());
-
-        // Update owned quantity
-        userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
-
-        // Save the updated/ new user animal
-        userAnimalRepository.save(userAnimal);
-    }
+//    public void saveInventory(MixRequest mixRequest) {
+//        User user = userRepository.findByUserUUID(mixRequest.getUserUUID())
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        Animal animal = animalRepository.findById(mixRequest.getAnimalId())
+//                .orElseThrow(() -> new RuntimeException("Animal not found"));
+//
+//        // Check if the animal already exists in the user's inventory
+//        UserAnimal userAnimal = userAnimalRepository.findByUserAndAnimal(user, animal)
+//                .orElseGet(() -> UserAnimal.builder()
+//                        .user(user)
+//                        .animal(animal)
+//                        .ownedQuantity(0) // If not present, start with zero
+//                        .placedQuantity(0) // Assume new animal is not placed
+//                        .upgrade(0) // Assume upgrades start at 0 for new animal
+//                        .build());
+//
+//        // Update owned quantity
+//        userAnimal.setOwnedQuantity(userAnimal.getOwnedQuantity() + 1);
+//
+//        // Save the updated/ new user animal
+//        userAnimalRepository.save(userAnimal);
+//    }
 
 //    public void deleteMixed(List<Long> selectedUserAnimalIds) {
 //        if (selectedUserAnimalIds != null && !selectedUserAnimalIds.isEmpty()) {
