@@ -2,6 +2,9 @@ package com.example.aniamlwaruser.controller;
 
 import com.example.aniamlwaruser.config.JwtService;
 import com.example.aniamlwaruser.config.TokenInfo;
+import com.example.aniamlwaruser.domain.entity.Grade;
+import com.example.aniamlwaruser.domain.entity.UserAnimal;
+import com.example.aniamlwaruser.domain.entity.UserBuilding;
 import com.example.aniamlwaruser.domain.request.*;
 import com.example.aniamlwaruser.domain.response.AnimalsResponse;
 import com.example.aniamlwaruser.domain.response.BuildingsResponse;
@@ -44,15 +47,6 @@ public class INVTController {
         return INVTService.getAnimal(userUUID, itemId);
     }
 
-//    @PostMapping("/animals")
-//    public void insertAnimals(@RequestBody INVTRequest invtRequest){
-//        INVTService.insertAnimal(invtRequest);
-//    }
-//
-//    @PostMapping("/buildings")
-//    public void insertBuildings(@RequestBody INVTRequest invtRequest){
-//        INVTService.insertBuilding(invtRequest);
-//    }
 
     @PostMapping("/delete/animal")
     public ResponseEntity<Boolean> deleteAnimalItem(@RequestHeader("Authorization") String accessToken, @RequestBody DeleteAnimalRequest request){
@@ -116,5 +110,23 @@ public class INVTController {
 
         return ResponseEntity.ok(true);
     }
+
+//    @GetMapping("/animals")
+//    public ResponseEntity<List<AnimalsResponse>> findAllAnimals(@RequestHeader("Authorization") String accessToken) {
+//        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+//        UUID userUUID = tokenInfo.getUserUUID();
+//        List<AnimalsResponse> animals = INVTService.findAllAnimals(userUUID);
+//        return ResponseEntity.ok(animals);
+//    }
+//
+//    // 건물 데이터 반환
+//    @GetMapping("/buildings")
+//    public ResponseEntity<List<BuildingsResponse>> findAllBuildings(@RequestHeader("Authorization") String accessToken) {
+//        TokenInfo tokenInfo = jwtService.parseAccessToken(accessToken.replace("Bearer ", ""));
+//        UUID userUUID = tokenInfo.getUserUUID();
+//        List<BuildingsResponse> buildings = INVTService.findAllBuildings(userUUID);
+//        return ResponseEntity.ok(buildings);
+//    }
+
 
     }
